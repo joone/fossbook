@@ -162,6 +162,80 @@ layouts/
     └── footer.html  # Footer partial
 ```
 
+## Deploying to GitHub Pages
+
+Fossbook can automatically deploy your blog to GitHub Pages using GitHub Actions.
+
+### Prerequisites: Install GitHub CLI (`gh`)
+
+The `fossbook deploy` command uses the GitHub CLI to create repositories and monitor deployments.
+
+**Linux (Debian/Ubuntu):**
+
+```bash
+sudo apt install gh
+```
+
+**macOS:**
+
+```bash
+brew install gh
+```
+
+**Windows:**
+
+```bash
+winget install GitHub.cli
+```
+
+Then authenticate with your GitHub account:
+
+```bash
+gh auth login
+```
+
+Follow the prompts to log in via browser or token.
+
+### Initialize with GitHub
+
+```bash
+mkdir my-blog && cd my-blog
+fossbook init --github
+```
+
+This will:
+1. Scaffold the site project (config, content directories)
+2. Create a GitHub repository for your blog
+3. Generate `.github/workflows/deploy.yml` for automatic deployments
+4. Push the initial commit to GitHub
+
+### Publish a post
+
+```bash
+fossbook new "My New Article"
+# ... edit content/posts/My New Article/index.md ...
+fossbook deploy
+```
+
+Fossbook will build the site, commit, push to GitHub, wait for the CI/CD pipeline to finish, and display the live URL:
+
+```
+Building site... done.
+Committing: "Publish: My New Article"
+Pushing to origin/main...
+Waiting for GitHub Pages deployment... ✓
+
+✅ Published! View your article at:
+   https://username.github.io/my-blog/My%20New%20Article/
+```
+
+**Deploy options:**
+
+```bash
+fossbook deploy --message "Update homepage"   # Custom commit message
+fossbook deploy --no-wait                     # Push without waiting for CI
+```
+
 ## License
 
 - Generator code: [BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause)
