@@ -129,6 +129,7 @@ The `fossbook` package exposes a CLI binary with the following commands:
 | `fossbook serve` | Build and start a local dev server (default port 3000). |
 | `fossbook new <title>` | Create a new post with scaffolded front-matter and directory structure. |
 | `fossbook init` | Scaffold a new site project with default directories and config file. |
+| `fossbook deploy` | Build, commit, push to GitHub, and wait for CI/CD to complete. Shows the live URL when done. |
 
 **npm scripts shorthand** (in the user's `package.json`):
 
@@ -217,6 +218,126 @@ The build process mirrors the current implementation with paths resolved from co
 - Serve the output directory using Express on a configurable port (default: 3000).
 - Future: Add file watching and live reload (out of scope for v1).
 
+### 4.7 CI/CD & GitHub Pages Deployment
+
+Fossbook provides built-in support for deploying a user's blog to GitHub Pages via GitHub Actions.
+
+#### 4.7.1 GitHub Repository Setup (`fossbook init --github`)
+
+When the user runs `fossbook init --github`, fossbook will:
+
+1. Initialize a local Git repository (`git init`) if one doesn't exist.
+2. Create a GitHub repository using the GitHub CLI (`gh repo create`) or the GitHub API.
+3. Set the repository as the `origin` remote.
+4. Generate a `.github/workflows/deploy.yml` workflow file (see §4.7.2).
+5. Commit and push the initial project to GitHub.
+
+**Prerequisites:** The user must have the GitHub CLI (`gh`) installed and authenticated, or provide a GitHub personal access token via environment variable `GITHUB_TOKEN`.
+
+#### 4.7.2 GitHub Actions Workflow (`deploy.yml`)
+
+`fossbook init` (with or without `--github`) generates a `.github/workflows/deploy.yml` in the user's blog repository:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npx fossbook build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+This workflow automatically builds and deploys the blog whenever the user pushes to `main`.
+
+#### 4.7.3 Publishing a Post (`fossbook deploy`)
+
+The `fossbook deploy` command provides a one-command workflow for publishing:
+
+1. **Build** the site (`fossbook build`).
+2. **Git add & commit** all changes (content + generated output) with an auto-generated commit message (e.g., `"Publish: <post-title>"`).
+3. **Push** to the `origin` remote on the `main` branch.
+4. **Poll the GitHub Actions workflow** status via the GitHub API or `gh run watch`.
+5. **Display the live URL** of the newly published article once the deployment completes.
+
+**Example workflow:**
+
+```bash
+$ fossbook new "My New Article"
+# ... edit content/posts/My New Article/index.md ...
+$ fossbook deploy
+
+Building site... done.
+Committing: "Publish: My New Article"
+Pushing to origin/main...
+Waiting for GitHub Pages deployment... ✓
+
+✅ Published! View your article at:
+   https://username.github.io/my-blog/My%20New%20Article/
+```
+
+**Options:**
+
+| Flag | Description |
+|------|-------------|
+| `--message <msg>` | Custom commit message (default: auto-generated) |
+| `--no-wait` | Push and exit without waiting for CI/CD to finish |
+| `--draft` | Commit but don't push (for staging changes locally) |
+
+#### 4.7.4 Configuration
+
+Deployment-related settings in `fossbook.config.js`:
+
+```js
+module.exports = {
+  // ... existing config ...
+  deploy: {
+    branch: "main",           // Branch to push to (default: "main")
+    remote: "origin",         // Git remote name (default: "origin")
+  },
+};
+```
+
 ---
 
 ## 5. Non-Functional Requirements
@@ -244,7 +365,9 @@ The build process mirrors the current implementation with paths resolved from co
 6. Bundle `themes/archie/` as the default theme inside the package.
 7. Add theme resolution logic (user theme → built-in theme fallback).
 8. Implement `fossbook new <title>` command to scaffold new posts.
-9. Publish to npm as `fossbook`.
+9. Generate `.github/workflows/deploy.yml` during `fossbook init`.
+10. Implement `fossbook deploy` command (build → commit → push → poll CI → show URL).
+11. Publish to npm as `fossbook`.
 
 ### Phase 2 — Refactor fosscomics as a user project
 
@@ -277,14 +400,18 @@ Commands:
   serve          Build and start a local dev server
   new <title>    Create a new post
   init           Create a new fossbook site project
+  deploy         Build, commit, push, and deploy to GitHub Pages
 
 Options:
-  -c, --config   Path to config file (default: ./fossbook.config.js)
-  -o, --output   Output directory (default: ./public)
-  -p, --port     Dev server port (default: 3000)
-  --clean        Remove output directory before build (default: true)
-  -v, --version  Show version number
-  -h, --help     Show help
+  -c, --config       Path to config file (default: ./fossbook.config.js)
+  -o, --output       Output directory (default: ./public)
+  -p, --port         Dev server port (default: 3000)
+  --clean            Remove output directory before build (default: true)
+  --github           (init) Also create a GitHub repository
+  --message <msg>    (deploy) Custom commit message
+  --no-wait          (deploy) Don't wait for CI/CD to finish
+  -v, --version      Show version number
+  -h, --help         Show help
 ```
 
 ---
