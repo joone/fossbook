@@ -6,9 +6,9 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Nanum+Pen+Script&family=Playpen+Sans:wght@100..800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="../styles/fonts.css">
-        <link rel="stylesheet" href="../styles/main.css">
-        <link rel="icon" type="image/png" href="../images/favicon.png">
+        <link rel="stylesheet" href="${page.config.basePath}styles/fonts.css">
+        <link rel="stylesheet" href="${page.config.basePath}styles/main.css">
+        <link rel="icon" type="image/png" href="${page.config.basePath}images/favicon.png">
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.title}</title>
@@ -32,10 +32,10 @@
                   ${page.config.blogName}
                 </div>
                 <nav class="site-navigation">
-                  <a href="/">Home</a>
-                  <a href="/all_posts">All posts</a>
-                  <a href="/about">About</a>
-                  <a href="/tags">Tags</a>
+                  <a href="${page.config.basePath}">Home</a>
+                  <a href="${page.config.basePath}all_posts">All posts</a>
+                  <a href="${page.config.basePath}about">About</a>
+                  <a href="${page.config.basePath}tags">Tags</a>
                 </nav>
             </header>
             <main>
@@ -50,17 +50,17 @@
                   <div class="post-tags">
                     <nav class="nav tags">
                       <ul class="tags">
-                        ${page.tags.map((tag) => `<li><a href="/tags/${tag.replace(/\s+/g, "_")}">${tag}</a></li>`).join("")}
+                        ${page.tags.map((tag) => `<li><a href="${page.config.basePath}tags/${tag.replace(/\s+/g, "_")}">${tag}</a></li>`).join("")}
                       </ul>
                     </nav>
                   </div>
               </article>
               <ul class="pagination-post" role="navigation">
                 <span class="page-item page-prev">
-                ${page.previous ? `<a href="../${page.previous.path}" class="page-link" aria-label="Previous">← ${page.previous.title}</a>` : ""}
+                ${page.previous ? `<a href="${page.config.basePath}${page.previous.path}" class="page-link" aria-label="Previous">← ${page.previous.title}</a>` : ""}
                 </span>
                 <span class="page-item page-next">
-                ${page.next ? `<a href="../${page.next.path}" class="page-link" aria-label="Next">${page.next.title} →</a>` : ""}
+                ${page.next ? `<a href="${page.config.basePath}${page.next.path}" class="page-link" aria-label="Next">${page.next.title} →</a>` : ""}
                 </span>
               </ul>
               ${page.config.comments && page.config.comments.provider === 'utterances' ? `<div class="comments border">
