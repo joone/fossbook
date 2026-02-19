@@ -14,7 +14,7 @@ Commands:
   build          Build the static site
   serve          Build and start a local dev server
   new <title>    Create a new post
-  init           Create a new fossbook site project
+  init [name]    Create a new fossbook site project
   deploy         Build, commit, push, and monitor deployment
 
 Options:
@@ -97,7 +97,8 @@ switch (command) {
 
   case "init": {
     const { initProject } = require("../lib/init");
-    initProject({ github: hasFlag("--github") });
+    const projectName = !args[1] || args[1].startsWith("--") ? null : args[1];
+    initProject({ github: hasFlag("--github"), name: projectName });
     break;
   }
 
