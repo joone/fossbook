@@ -15,12 +15,17 @@ Commands:
   serve          Build and start a local dev server
   new <title>    Create a new post
   init           Create a new fossbook site project
+  deploy         Build, commit, push, and monitor deployment
 
 Options:
   -c, --config   Path to config file (default: ./fossbook.config.js)
   -o, --output   Output directory (default: ./public)
   -p, --port     Dev server port (default: 3000)
   --clean        Remove output directory before build (default: true)
+  --github       (init) Also create a GitHub repo and push
+  -m, --message  (deploy) Custom commit message
+  --no-wait      (deploy) Push without waiting for CI status
+  --draft        (deploy) Commit locally without pushing
   -v, --version  Show version number
   -h, --help     Show help
 `);
@@ -92,7 +97,18 @@ switch (command) {
 
   case "init": {
     const { initProject } = require("../lib/init");
-    initProject();
+    initProject({ github: hasFlag("--github") });
+    break;
+  }
+
+  case "deploy": {
+    const config = loadConfig(configPath);
+    const { deploy } = require("../lib/deploy");
+    deploy(config, {
+      message: getOption("-m", "--message"),
+      noWait: hasFlag("--no-wait"),
+      draft: hasFlag("--draft"),
+    });
     break;
   }
 
