@@ -3,9 +3,9 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/styles/fonts.css">
-        <link rel="stylesheet" href="/styles/main.css">
-        <link rel="icon" type="image/png" href="/images/favicon.png">
+        <link rel="stylesheet" href="${page.config.basePath}styles/fonts.css">
+        <link rel="stylesheet" href="${page.config.basePath}styles/main.css">
+        <link rel="icon" type="image/png" href="${page.config.basePath}images/favicon.png">
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.config.blogName}</title>
@@ -20,9 +20,9 @@
                 <div class="main">${page.config.blogName}</div>
                 <nav>
                   Home
-                  <a href="/all_posts">All posts</a>
-                  <a href="/about">About</a>
-                  <a href="/tags">Tags</a>
+                  <a href="${page.config.basePath}all_posts">All posts</a>
+                  <a href="${page.config.basePath}about">About</a>
+                  <a href="${page.config.basePath}tags">Tags</a>
                 </nav>
             </header>
 
@@ -35,22 +35,22 @@
                     (
                       post,
                     ) => `<section class="list-item" aria-label="Summary of post">
-                    <h1><a href="/${post.path}">${post.title}</a></h1>
+                    <h1><a href="${page.config.basePath}${post.path}">${post.title}</a></h1>
                         <time>${page.formatDate(new Date(post.date))}</time>
                       ${post.image ? `<div class="responsive-image">
-                         <img src="/${post.path}/images/${post.image}" alt="${post.title}">
+                         <img src="${page.config.basePath}${post.path}/images/${post.image}" alt="${post.title}">
                       </div>` : ''}
                       <div class="description">${post.description || ''}</div>
-                      <a class="readmore" href="/${post.path}">Read more ⟶</a>
+                      <a class="readmore" href="${page.config.basePath}${post.path}">Read more ⟶</a>
                     </section>`,
                   )
                   .join("")}
               <ul class="pagination" role="navigation">
                 <span class="page-item page-prev">
-                ${data.prev ? `<a href="/page/${data.prev}.html" class="page-link" aria-label="Previous">← Prev</a>` : `<span class="page-link disable-link"><span aria-hidden="true">← Prev</span></span>`}
+                ${data.prev ? `<a href="${page.config.basePath}page/${data.prev}.html" class="page-link" aria-label="Previous">← Prev</a>` : `<span class="page-link disable-link"><span aria-hidden="true">← Prev</span></span>`}
                 </span>
                 <span class="page-item page-next">
-                ${data.next ? `<a href="page/${data.next}.html" class="page-link" aria-label="Next">Next →</a>` : `<span class="page-link disable-link"><span aria-hidden="true">Next →</span></span>`}
+                ${data.next ? `<a href="${page.config.basePath}page/${data.next}.html" class="page-link" aria-label="Next">Next →</a>` : `<span class="page-link disable-link"><span aria-hidden="true">Next →</span></span>`}
                 </span>
               </ul>
             </main>

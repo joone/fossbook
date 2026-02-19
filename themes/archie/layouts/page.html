@@ -3,9 +3,9 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="../styles/fonts.css">
-        <link rel="stylesheet" href="../styles/main.css">
-        <link rel="icon" type="image/png" href="../images/favicon.png">
+        <link rel="stylesheet" href="${page.config.basePath}styles/fonts.css">
+        <link rel="stylesheet" href="${page.config.basePath}styles/main.css">
+        <link rel="icon" type="image/png" href="${page.config.basePath}images/favicon.png">
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.config.blogName}: ${page.title}</title>
@@ -25,10 +25,10 @@
                   ${page.config.blogName}
                 </div>
                 <nav class="site-navigation">
-                  <a href="/">Home</a>
-                  <a href="/all_posts">All posts</a>
+                  <a href="${page.config.basePath}">Home</a>
+                  <a href="${page.config.basePath}all_posts">All posts</a>
                   About
-                  <a href="/tags">Tags</a>
+                  <a href="${page.config.basePath}tags">Tags</a>
                 </nav>
             </header>
             <main>
