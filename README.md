@@ -1,6 +1,7 @@
 # Fossbook
 
 A lightweight static blog site generator for GitHub Pages, similar to Hugo but built with Node.js.
+It was originally part of the [F/OSS Comics blog](https://fosscomics.com) and is now an independent, installable package that anyone can use.
 
 ## Features
 
