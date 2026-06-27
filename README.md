@@ -86,6 +86,10 @@ module.exports = {
   image: "https://example.com/default-image.png",
   theme: "archie",
 
+  // Optional: serve posts under a URL prefix, e.g. "posts" -> /posts/<slug>/
+  // (default: "" serves posts at the site root, /<slug>/)
+  postsPath: "",
+
   // Optional comments (see "Comments" below)
   comments: {
     provider: "utterances",
@@ -127,6 +131,20 @@ content/posts/My Post Title/
 └── images/
     └── feature.png
 ```
+
+### Post URLs
+
+By default, posts are served at the site root, e.g. `/my-post-title/`. To nest
+them under a path segment instead, set `postsPath` in `fossbook.config.js`:
+
+```js
+postsPath: "posts",   // serves the post above at /posts/my-post-title/
+```
+
+This affects the generated output directory, the post URL, post links on the
+home/all-posts/tag pages, and image paths. The on-disk source layout under
+`content/posts/` does not change. Leave `postsPath` empty (the default) to keep
+root-level URLs.
 
 ## CLI Reference
 
