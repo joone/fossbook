@@ -153,10 +153,10 @@
   }
   
   pre {
-    background-color: #ececec;
+    background-color: #f6f8fa;
     line-height: 1.4;
     overflow-x: auto;
-    padding: 1em;
+    padding: 0;
   }
   
   .highlight pre ::selection {
