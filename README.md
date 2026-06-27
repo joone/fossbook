@@ -86,6 +86,14 @@ module.exports = {
   image: "https://example.com/default-image.png",
   theme: "archie",
 
+  // Optional comments (see "Comments" below)
+  comments: {
+    provider: "utterances",
+    repo: "you/your-blog",
+    issueTerm: "pathname",
+    theme: "github-light",
+  },
+
   // Directory overrides (defaults shown)
   content: "./content",
   postsDir: "./content/posts",
@@ -148,6 +156,46 @@ Fossbook ships with the Archie theme by default. To use a custom theme:
 3. Set `theme: "your-theme"` in `fossbook.config.js`
 
 Theme resolution order: user project `themes/` → built-in `themes/`.
+
+## Comments
+
+Fossbook supports [utterances](https://utteranc.es) — a commenting widget that
+stores comments as GitHub issues. When enabled, a comment box is rendered at the
+bottom of every post page.
+
+### Setup
+
+1. Make the repository that backs the comments **public**.
+2. Install the [utterances GitHub App](https://github.com/apps/utterances) on
+   that repository so the bot can create issues.
+3. Add a `comments` block to `fossbook.config.js`:
+
+```js
+comments: {
+  provider: "utterances",        // currently the only supported provider
+  repo: "you/your-blog",         // owner/repo that stores the comment issues
+  issueTerm: "pathname",         // how a post maps to an issue (see below)
+  theme: "github-light",         // any utterances theme, e.g. "github-dark"
+},
+```
+
+Omit the `comments` block (or set it to `null`) to disable comments.
+
+### Options
+
+| Field       | Required | Default          | Description                                                      |
+| ----------- | -------- | ---------------- | ---------------------------------------------------------------- |
+| `provider`  | yes      | —                | Must be `"utterances"`.                                          |
+| `repo`      | yes      | —                | `owner/repo` whose issues store the comments.                    |
+| `issueTerm` | no       | `"pathname"`     | Mapping between a page and its issue: `pathname`, `url`, `title`, `og:title`. |
+| `theme`     | no       | `"github-light"` | Any [utterances theme](https://utteranc.es/#configuration).      |
+
+### Mapping notes
+
+With `issueTerm: "pathname"`, each post is matched to a GitHub issue whose title
+equals the page's pathname (with the leading slash stripped). If you change a
+post's URL, the existing comment thread no longer matches — rename the issue
+title to the new pathname to keep the old comments.
 
 ### Required layout files
 
