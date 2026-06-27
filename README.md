@@ -13,6 +13,7 @@ It was originally part of the [F/OSS Comics blog](https://fosscomics.com) and is
 - **GitHub Pages** — Built-in CNAME support for custom domains
 - **Dev server** — Local preview server with Express
 - **Syntax highlighting** — Code block highlighting via highlight.js
+- **Mermaid diagrams** — ` ```mermaid ` code blocks render as diagrams
 
 ## Quick Start
 
@@ -146,6 +147,20 @@ postsPath: "",          // serves the post above at /my-post-title/ (site root)
 This affects the generated output directory, the post URL, post links on the
 home/all-posts/tag pages, and image paths. The on-disk source layout under
 `content/posts/` does not change.
+
+### Mermaid diagrams
+
+Fenced code blocks tagged `mermaid` are rendered as diagrams instead of code.
+The [Mermaid](https://mermaid.js.org) script is loaded from a CDN only on pages
+that contain a diagram.
+
+````markdown
+```mermaid
+sequenceDiagram
+    Alice->>Bob: Hello Bob
+    Bob-->>Alice: Hi Alice
+```
+````
 
 ## CLI Reference
 
