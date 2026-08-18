@@ -1,17 +1,21 @@
 #!/bin/bash
 
-# Check the argument and run the corresponding npm version command
-if [ "$1" == "minor" ]; then
-  npm version minor -m "Bump version to %s"
-elif [ "$1" == "major" ]; then
-  npm version major -m "Bump version to %s"
-else
-  npm version patch -m "Bump version to %s"
-fi
+level="${1:-patch}"
+
+case "$level" in
+  patch|minor|major) ;;
+  *)
+    echo "Usage: $0 [patch|minor|major]" >&2
+    exit 1
+    ;;
+esac
+
+npm version "$level" -m "Bump version to %s" || exit $?
+tag="v$(node -p "require('./package.json').version")"
 
 echo "Would you like to push the tag? (y or n)"
 read answer
 
 if [ "$answer" == "y" ]; then
-  git push --tags
+  git push origin "refs/tags/$tag"
 fi
