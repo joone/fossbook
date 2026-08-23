@@ -1,6 +1,6 @@
 {
   "name": "fossbook",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "A lightweight static blog site generator for GitHub Pages",
   "main": "lib/index.js",
   "scripts": {
