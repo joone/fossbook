@@ -45,6 +45,8 @@
   .blockquote-container {
     display: flex;
     justify-content: center;
+    margin-inline: auto;
+    width: var(--dialogue-width, 100%);
   }
 
 
@@ -119,7 +121,7 @@
     margin: 0;
     max-width: 100%;
   }
-  
+
   figure img {
     max-height: 500px;
   }
@@ -128,6 +130,7 @@
     figure {
       padding: 0 40px;
     }
+
   }
   
   figure h4 {
