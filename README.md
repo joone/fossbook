@@ -51,6 +51,14 @@ fossbook new "My First Post"
 
 This creates `content/posts/My First Post/index.md` with pre-filled front-matter and an `images/` directory.
 
+To create the default article and one or more configured translations together:
+
+```bash
+fossbook new "My First Post" --lang ko,ja
+```
+
+This also creates `index.ko.md` and `index.ja.md` in the same post directory. Running the command again preserves existing files and creates only missing translations.
+
 ### Build the site
 
 ```bash
@@ -177,6 +185,7 @@ Options:
   -c, --config   Path to config file (default: ./fossbook.config.js)
   -o, --output   Output directory (default: ./public)
   -p, --port     Dev server port (default: 3000)
+  --lang         (new) Comma-separated translation languages, e.g. ko,ja
   -v, --version  Show version number
   -h, --help     Show help
 ```

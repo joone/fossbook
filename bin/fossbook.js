@@ -23,6 +23,7 @@ Options:
   -p, --port     Dev server port (default: 3000)
   --clean        Remove output directory before build (default: true)
   --github       (init) Also create a GitHub repo and push
+  --lang         (new) Comma-separated translation languages, e.g. ko,ja
   -m, --message  (deploy) Custom commit message
   --no-wait      (deploy) Push without waiting for CI status
   --draft        (deploy) Commit locally without pushing
@@ -89,9 +90,18 @@ switch (command) {
       console.error('Error: Please provide a post title. Usage: fossbook new "My Post Title"');
       process.exit(1);
     }
+    if (hasFlag("--lang") && !getOption("--lang")) {
+      console.error("Error: Please provide at least one language after --lang");
+      process.exit(1);
+    }
     const config = loadConfig(configPath);
     const { createPost } = require("../lib/new");
-    createPost(config, title);
+    try {
+      createPost(config, title, getOption("--lang"));
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+      process.exit(1);
+    }
     break;
   }
 
