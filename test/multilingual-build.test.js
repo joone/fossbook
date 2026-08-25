@@ -2,7 +2,7 @@ const assert = require("assert");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const { build } = require("../lib");
+const { build, createAboutTranslations } = require("../lib");
 const { createLanguageConfigs } = require("../lib/mod/config");
 
 function writePost(postsDir, slug, fileName, title) {
@@ -13,6 +13,14 @@ function writePost(postsDir, slug, fileName, title) {
     `---\ntitle: ${title}\ndate: 2026-08-23\ndescription: ${title}\nimage: panel.png\ntags: test\n---\n\n![](images/panel.png)\n`,
   );
   fs.writeFileSync(path.join(postDir, "images", "panel.png"), "image");
+}
+
+function writePage(contentDir, fileName, title) {
+  fs.mkdirSync(contentDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(contentDir, fileName),
+    `---\ntitle: ${title}\ndescription: ${title}\n---\n\n${title}\n`,
+  );
 }
 
 describe("Multilingual site build", () => {
@@ -26,6 +34,36 @@ describe("Multilingual site build", () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
+  it("includes only written About translations", () => {
+    const contentDir = path.join(tempDir, "content");
+    writePage(contentDir, "about.md", "About this site");
+    const translations = createAboutTranslations([
+      {
+        language: "en",
+        languageName: "English",
+        defaultLanguage: "en",
+        blogsite: "https://example.com",
+        dev: { content: contentDir },
+      },
+      {
+        language: "ko",
+        languageName: "한국어",
+        defaultLanguage: "en",
+        blogsite: "https://example.com/ko",
+        dev: { content: contentDir },
+      },
+    ]);
+
+    assert.deepStrictEqual(translations, [
+      {
+        language: "en",
+        languageName: "English",
+        url: "https://example.com/about/",
+        isDefault: true,
+      },
+    ]);
+  });
+
   it("generates separate static output for each configured language", () => {
     const contentDir = path.join(tempDir, "content");
     const postsDir = path.join(contentDir, "posts");
@@ -33,6 +71,8 @@ describe("Multilingual site build", () => {
     writePost(postsDir, "translated", "index.md", "English title");
     writePost(postsDir, "translated", "index.ko.md", "한국어 제목");
     writePost(postsDir, "english-only", "index.md", "English only");
+    writePage(contentDir, "about.md", "About this site");
+    writePage(contentDir, "about.ko.md", "사이트 소개");
 
     const config = {
       blogName: "My Blog",
@@ -82,6 +122,14 @@ describe("Multilingual site build", () => {
       path.join(outputDir, "posts", "english-only", "index.html"),
       "utf8",
     );
+    const englishAbout = fs.readFileSync(
+      path.join(outputDir, "about", "index.html"),
+      "utf8",
+    );
+    const koreanAbout = fs.readFileSync(
+      path.join(outputDir, "ko", "about", "index.html"),
+      "utf8",
+    );
     const koreanHome = fs.readFileSync(path.join(outputDir, "ko", "index.html"), "utf8");
 
     assert.match(englishPost, /<html lang="en">/);
@@ -99,6 +147,13 @@ describe("Multilingual site build", () => {
     assert.match(koreanPost, /href="https:\/\/example\.com\/ko\/posts\/translated\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
     assert.doesNotMatch(englishOnlyPost, /class="language-switcher"/);
     assert.doesNotMatch(englishOnlyPost, /hreflang="ko"/);
+    assert.match(englishAbout, /About this site/);
+    assert.match(englishAbout, /href="https:\/\/example\.com\/about\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
+    assert.match(englishAbout, /href="https:\/\/example\.com\/ko\/about\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
+    assert.match(englishAbout, /hreflang="ko" href="https:\/\/example\.com\/ko\/about\/"/);
+    assert.match(koreanAbout, /사이트 소개/);
+    assert.match(koreanAbout, /href="https:\/\/example\.com\/about\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
+    assert.match(koreanAbout, /href="https:\/\/example\.com\/ko\/about\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
     assert.match(koreanHome, /한국어 제목/);
     assert.doesNotMatch(koreanHome, /English only/);
     assert.strictEqual(
