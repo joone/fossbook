@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${page.config.language || "en"}">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,6 +14,8 @@
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.title}</title>
         <meta name="description" content="${page.description}" />
+        <link rel="canonical" href="${page.url}" />
+        ${page.alternateLanguageLinks()}
 
         ${page.openGraph(
           "article",
@@ -51,6 +53,7 @@
                   <div class="title">
                     <h1 class="title">${page.title}</h1>
                     <div class="meta">Posted on ${page.formatDate(new Date(page.date))}</div>
+                    ${page.languageSwitcher()}
                   </div>
                   ${page.body.includes('class="blockquote-container image-dialogue"') ? `<div class="transcript-control">
                     <div class="transcript-toggle">
