@@ -1,5 +1,5 @@
 @import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css");
-@import url("https://hangeul.pstatic.net/hangeul_static/css/NanumGiBbeumBarkEum.css");
+@import url("https://hangeul.pstatic.net/hangeul_static/css/NanumHimNaeRaNeunMarBoDan.css");
 
 /* Markdown */
 :root{
@@ -125,7 +125,9 @@
   }
 
   html:lang(ko) blockquote {
-    font-family: 'NanumGiBbeumBarkEum', cursive;
+    font-family: 'NanumHimNaeRaNeunMarBoDan', 'NanumSquareNeo', sans-serif;
+    font-size: 1.5rem;
+    line-height: 1;
   }
 
   @media print {

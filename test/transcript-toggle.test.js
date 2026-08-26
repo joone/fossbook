@@ -29,8 +29,8 @@ describe("Comic transcript toggle", () => {
 
   it("uses Korean fonts for body text and dialogue", () => {
     assert.match(styles, /nanum-square-neo\.css/);
-    assert.match(styles, /NanumGiBbeumBarkEum\.css/);
+    assert.match(styles, /NanumHimNaeRaNeunMarBoDan\.css/);
     assert.match(styles, /html:lang\(ko\)\s*{\s*font-family: 'NanumSquareNeo', sans-serif;/);
-    assert.match(styles, /html:lang\(ko\) blockquote\s*{\s*font-family: 'NanumGiBbeumBarkEum', cursive;/);
+    assert.match(styles, /html:lang\(ko\) blockquote\s*{\s*font-family: 'NanumHimNaeRaNeunMarBoDan', 'NanumSquareNeo', sans-serif;\s*font-size: 1\.5rem;\s*line-height: 1;/);
   });
 });
