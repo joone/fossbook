@@ -10,6 +10,7 @@ It was originally part of the [F/OSS Comics blog](https://fosscomics.com) and is
 - **Tags** — Tag-based categorization with tag index and per-tag listing pages
 - **Theming** — Bundled Archie theme with support for custom themes
 - **SEO** — Open Graph and Twitter Card meta tags out of the box
+- **Multilingual sites** — Generate language-specific pages with translation links and `hreflang` metadata
 - **GitHub Pages** — Built-in CNAME support for custom domains
 - **Dev server** — Local preview server with Express
 - **Syntax highlighting** — Code block highlighting via highlight.js
@@ -99,6 +100,19 @@ module.exports = {
   // Set to "" to serve posts at the site root, /<slug>/.
   postsPath: "posts",
 
+  // Optional multilingual configuration
+  defaultLanguage: "en",
+  defaultLanguageInSubdir: false,
+  languages: {
+    en: { languageName: "English", locale: "en-US" },
+    ko: {
+      languageName: "한국어",
+      locale: "ko-KR",
+      blogName: "나의 블로그",
+      blogDescription: "한국어 블로그",
+    },
+  },
+
   // Optional comments (see "Comments" below)
   comments: {
     provider: "utterances",
@@ -155,6 +169,125 @@ postsPath: "",          // serves the post above at /my-post-title/ (site root)
 This affects the generated output directory, the post URL, post links on the
 home/all-posts/tag pages, and image paths. The on-disk source layout under
 `content/posts/` does not change.
+
+## Multilingual Sites
+
+Fossbook generates a separate static page for each available language. The
+browser loads only the selected language page; changing languages follows a
+normal link and does not require JavaScript.
+
+### Configuration
+
+Add the languages supported by the site to `fossbook.config.js`:
+
+```js
+module.exports = {
+  defaultLanguage: "en",
+  defaultLanguageInSubdir: false,
+  languages: {
+    en: {
+      languageName: "English",
+      locale: "en-US",
+    },
+    ko: {
+      languageName: "한국어",
+      locale: "ko-KR",
+      blogName: "나의 블로그",
+      blogDescription: "한국어 블로그",
+    },
+    ja: {
+      languageName: "日本語",
+      locale: "ja-JP",
+    },
+  },
+};
+```
+
+- `defaultLanguage` identifies the language represented by `index.md` and
+  `about.md`.
+- `defaultLanguageInSubdir: false` keeps the default language at the site root.
+  Other languages are generated below their language code, such as `/ko/`.
+- Set `defaultLanguageInSubdir: true` to generate the default language below
+  its code as well, such as `/en/`.
+- Each language can override site values such as `blogName` and
+  `blogDescription`.
+- `locale` controls language-specific date formatting.
+- Language keys should use standard language tags such as `en`, `ko`, `ja`, or
+  `zh-Hant`.
+
+If `languages` is omitted, Fossbook keeps its existing single-language
+behavior and URLs.
+
+### Create translated posts
+
+Create only the default-language article:
+
+```bash
+fossbook new "Charles Babbage and Ada Lovelace"
+```
+
+Create the default article and multiple translations together:
+
+```bash
+fossbook new "Charles Babbage and Ada Lovelace" --lang ko,ja
+```
+
+The languages passed to `--lang` must be present in the `languages`
+configuration. The command always ensures that the default `index.md` exists,
+then creates the requested translation files. Existing Markdown files and
+images are never overwritten, so the command can be run later to add another
+translation:
+
+```bash
+fossbook new "Charles Babbage and Ada Lovelace" --lang ja
+```
+
+### Source structure
+
+Translations live in the same post bundle and share its `images/` directory:
+
+```text
+content/
+├── about.md
+├── about.ko.md
+└── posts/
+    └── Charles Babbage and Ada Lovelace/
+        ├── index.md
+        ├── index.ko.md
+        ├── index.ja.md
+        └── images/
+            └── feature.png
+```
+
+- `index.md` is the default-language article.
+- `index.<language>.md` is a translated article.
+- `about.md` is the default About page.
+- `about.<language>.md` is a translated About page.
+- A translation is generated only when its Markdown source exists. Fossbook
+  does not substitute default-language content for a missing translation.
+
+### Generated output
+
+With `defaultLanguage: "en"` and `defaultLanguageInSubdir: false`, the example
+above generates:
+
+```text
+public/
+├── index.html
+├── about/index.html
+├── posts/Charles Babbage and Ada Lovelace/index.html
+├── ko/
+│   ├── index.html
+│   ├── about/index.html
+│   └── posts/Charles Babbage and Ada Lovelace/index.html
+└── ja/
+    ├── index.html
+    └── posts/Charles Babbage and Ada Lovelace/index.html
+```
+
+Translated article and About pages display ISO language links such as `EN`,
+`KO`, and `JA`. Only translations that exist are shown. These pages also emit
+canonical URLs and `hreflang` alternate links for search engines.
 
 ### Mermaid diagrams
 
