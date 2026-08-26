@@ -26,4 +26,11 @@ describe("Comic transcript toggle", () => {
   it("keeps transcripts visible when printing", () => {
     assert.match(styles, /@media print[\s\S]*\.transcripts-hidden \.image-dialogue\s*{\s*display: flex;/);
   });
+
+  it("uses Korean fonts for body text and dialogue", () => {
+    assert.match(styles, /nanum-square-neo\.css/);
+    assert.match(styles, /NanumGiBbeumBarkEum\.css/);
+    assert.match(styles, /html:lang\(ko\)\s*{\s*font-family: 'NanumSquareNeo', sans-serif;/);
+    assert.match(styles, /html:lang\(ko\) blockquote\s*{\s*font-family: 'NanumGiBbeumBarkEum', cursive;/);
+  });
 });

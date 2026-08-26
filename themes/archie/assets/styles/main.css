@@ -1,3 +1,6 @@
+@import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css");
+@import url("https://hangeul.pstatic.net/hangeul_static/css/NanumGiBbeumBarkEum.css");
+
 /* Markdown */
 :root{
   --maincolor: #bcc9fc;
@@ -11,6 +14,10 @@
     font-family: 'Roboto Mono', monospace;
     font-size: 15px;
     line-height: 1.6em;
+  }
+
+  html:lang(ko) {
+    font-family: 'NanumSquareNeo', sans-serif;
   }
 
   /* for iOS */
@@ -115,6 +122,10 @@
     font-weight: 400;
     font-style: normal;
     font-size: 1rem;
+  }
+
+  html:lang(ko) blockquote {
+    font-family: 'NanumGiBbeumBarkEum', cursive;
   }
 
   @media print {
