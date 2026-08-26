@@ -126,8 +126,12 @@
 
   html:lang(ko) blockquote {
     font-family: 'NanumHimNaeRaNeunMarBoDan', 'NanumSquareNeo', sans-serif;
-    font-size: 1.5rem;
-    line-height: 1;
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+
+  html:lang(ko) blockquote p {
+    line-height: inherit;
   }
 
   @media print {
