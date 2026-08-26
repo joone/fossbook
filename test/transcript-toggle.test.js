@@ -28,8 +28,17 @@ describe("Comic transcript toggle", () => {
   });
 
   it("uses Korean fonts for body text and dialogue", () => {
-    assert.match(styles, /nanum-square-neo\.css/);
-    assert.match(styles, /NanumHimNaeRaNeunMarBoDan\.css/);
+    assert.match(styles, /url\('\.\.\/fonts\/NanumSquareNeoTTF-bRg\.woff'\) format\('woff'\)/);
+    assert.match(styles, /url\('\.\.\/fonts\/NanumHimNaeRaNeunMarBoDan\.woff'\) format\('woff'\)/);
+    assert.doesNotMatch(styles, /hangeul\.pstatic\.net/);
+    assert.strictEqual(
+      fs.existsSync(path.join(__dirname, "../themes/archie/assets/fonts/NanumSquareNeoTTF-bRg.woff")),
+      true,
+    );
+    assert.strictEqual(
+      fs.existsSync(path.join(__dirname, "../themes/archie/assets/fonts/NanumHimNaeRaNeunMarBoDan.woff")),
+      true,
+    );
     assert.match(styles, /html:lang\(ko\)\s*{\s*font-family: 'NanumSquareNeo', sans-serif;/);
     assert.match(styles, /html:lang\(ko\) blockquote\s*{\s*font-family: 'NanumHimNaeRaNeunMarBoDan', 'NanumSquareNeo', sans-serif;\s*font-size: 1\.3rem;\s*line-height: 1\.2;/);
     assert.match(styles, /html:lang\(ko\) blockquote p\s*{\s*line-height: inherit;/);
