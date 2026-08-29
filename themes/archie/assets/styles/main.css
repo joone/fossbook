@@ -243,11 +243,13 @@
   /* Code blocks */
   code {
     background-color: #f1f1f1;
+    font-family: 'Roboto Mono', monospace;
     padding: .1em .2em;
   }
   
   pre {
     background-color: #f6f8fa;
+    font-family: 'Roboto Mono', monospace;
     line-height: 1.4;
     overflow-x: auto;
     padding: 0;
@@ -278,6 +280,7 @@
   /* Header */
   header {
     display: flex;
+    font-family: 'Roboto Mono', monospace;
     flex-wrap: wrap;
     justify-content: space-between;
     margin: 1em 0;
@@ -325,6 +328,9 @@
   h1.assistive-text {
     display: none;
   }
+  nav {
+    font-family: 'Roboto Mono', monospace;
+  }
   nav.post-navigation {
     display: flex;
     justify-content: end;
@@ -338,6 +344,7 @@
     display: flex;
     align-items: center;
     border-top: 0.4rem dotted var(--bordercl);
+    font-family: 'Roboto Mono', monospace;
     padding: 2rem 0rem;
     margin-top: 2rem;
   }
