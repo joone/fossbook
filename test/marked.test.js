@@ -43,7 +43,7 @@ describe("Markdown rendering", () => {
       html,
       /class="image-container" style="text-align: center;"/,
     );
-    assert.match(html, /<img[^>]+style="width: 60%;">/);
+    assert.match(html, /<img[^>]+class="sized-image" style="width: 60%;">/);
   });
 
   it("marks dialogue adjacent to an unsized image", () => {

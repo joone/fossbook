@@ -33,7 +33,9 @@ Add `size:<percentage>` to the image title to set its width:
 ```
 
 Only integer percentages are supported. The image remains responsive and
-will not grow beyond its content area.
+will not grow beyond its content area. The bundled Archie theme uses the
+requested width on larger screens and expands sized images to `100%` on
+screens narrower than 600 pixels.
 
 ### Alignment
 

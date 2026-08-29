@@ -258,6 +258,10 @@
     .panel-group {
       grid-template-columns: 1fr;
     }
+
+    .sized-image {
+      width: 100% !important;
+    }
   }
   
   @media screen and (min-width: 600px) {
