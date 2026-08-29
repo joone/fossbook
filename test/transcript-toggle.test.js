@@ -53,4 +53,10 @@ describe("Comic transcript toggle", () => {
     assert.match(styles, /\.title h1\s*{\s*font-size: 1\.7rem;/);
     assert.doesNotMatch(styles, /(?:^|\n)\s*h[1-6]::before/);
   });
+
+  it("uses a restrained underline thickness for links", () => {
+    assert.match(styles, /(?:^|\n)\s*a\s*{\s*border-bottom: 2px solid var\(--maincolor\);/);
+    assert.match(styles, /\.callout a\s*{\s*border-bottom: 2px solid #fff;/);
+    assert.match(styles, /\.tags a\s*{\s*border-bottom: 2px solid var\(--maincolor\);/);
+  });
 });
