@@ -127,6 +127,11 @@ module.exports = {
 
 ## Content Format
 
+Fossbook supports GitHub Flavored Markdown plus extensions for image sizing
+and alignment, captions, comic dialogue, aligned links, Mermaid diagrams, and
+syntax-highlighted code. See [Fossbook Markdown](fossbook_markdown.md) for
+syntax and examples.
+
 ### Post front-matter
 
 ```markdown
