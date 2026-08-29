@@ -131,6 +131,7 @@ describe("Multilingual site build", () => {
       path.join(outputDir, "ko", "about", "index.html"),
       "utf8",
     );
+    const englishHome = fs.readFileSync(path.join(outputDir, "index.html"), "utf8");
     const koreanHome = fs.readFileSync(path.join(outputDir, "ko", "index.html"), "utf8");
 
     assert.match(englishPost, /<html lang="en">/);
@@ -155,7 +156,12 @@ describe("Multilingual site build", () => {
     assert.match(koreanAbout, /사이트 소개/);
     assert.match(koreanAbout, /href="\/about\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
     assert.match(koreanAbout, /href="\/ko\/about\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
+    assert.match(englishHome, /href="\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
+    assert.match(englishHome, /href="\/ko\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
+    assert.match(englishHome, /hreflang="ko" href="https:\/\/example\.com\/ko\/"/);
     assert.match(koreanHome, /한국어 제목/);
+    assert.match(koreanHome, /href="\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
+    assert.match(koreanHome, /href="\/ko\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
     assert.doesNotMatch(koreanHome, /English only/);
     assert.strictEqual(
       fs.existsSync(path.join(outputDir, "ko", "posts", "english-only", "index.html")),

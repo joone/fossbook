@@ -10,6 +10,8 @@
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.config.blogName}</title>
         <meta name="description" content="${page.config.blogDescription}" />
+        <link rel="canonical" href="${page.url}" />
+        ${page.alternateLanguageLinks()}
         ${page.openGraph("website")}
         <!-- Twitter Card -->
         ${page.twitterCard("summary")}
@@ -17,7 +19,10 @@
     <body>
         <div class="content">
             <header>
-                <div class="main">${page.config.blogName}</div>
+                <div>
+                  <div class="main">${page.config.blogName}</div>
+                  ${page.languageSwitcher()}
+                </div>
                 <nav>
                   Home
                   <a href="${page.config.basePath}all_posts">All posts</a>
