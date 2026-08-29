@@ -75,6 +75,26 @@ image and displays a transcript visibility control on posts that contain this
 pattern. A blank line between the image and blockquote is allowed. Intervening
 prose breaks the association, leaving the blockquote as an ordinary quotation.
 
+## Panel Groups
+
+Place images in a `panels` container to arrange them as a responsive grid:
+
+```markdown
+:::panels columns="2" label="Computing pioneers"
+![Alan Turing](images/alan-turing.png "Alan Turing (1912-1954)")
+![John von Neumann](images/von-neumann.png "John von Neumann (1903-1957)")
+:::
+```
+
+The optional `columns` attribute sets the preferred desktop column count and
+accepts integers from `1` to `6`. It defaults to `2`. The bundled Archie theme
+collapses panel groups to one column on screens narrower than 600 pixels.
+
+Use the optional `label` attribute to give the group an accessible name.
+Images inside the group retain the usual image caption, size, and alignment
+features. Unsupported, duplicate, or malformed attributes stop the build with
+an error instead of being ignored.
+
 ## Aligned Links
 
 Links accept the same alignment directive in their optional title:

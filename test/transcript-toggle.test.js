@@ -59,4 +59,10 @@ describe("Comic transcript toggle", () => {
     assert.match(styles, /\.callout a\s*{\s*border-bottom: 2px solid #fff;/);
     assert.match(styles, /\.tags a\s*{\s*border-bottom: 2px solid var\(--maincolor\);/);
   });
+
+  it("lays out panel groups responsively", () => {
+    assert.match(styles, /\.panel-group\s*{[\s\S]*?display: grid;[\s\S]*?grid-template-columns: repeat\(var\(--panel-columns\), minmax\(0, 1fr\)\);/);
+    assert.match(styles, /@media screen and \(max-width: 599px\)[\s\S]*?\.panel-group\s*{\s*grid-template-columns: 1fr;/);
+    assert.match(styles, /\.panel-group figure\s*{[\s\S]*?padding: 0;/);
+  });
 });

@@ -2,6 +2,36 @@ const assert = require("assert");
 const marked = require("../lib/mod/marked");
 
 describe("Markdown rendering", () => {
+  it("renders a responsive group of captioned panels", () => {
+    const html = marked.parse(`:::panels columns="2" label="Computing pioneers"
+![Alan Turing](images/turing.png "Alan Turing, 1912-1954")
+![John von Neumann](images/von-neumann.png "John von Neumann, 1903-1957")
+:::`);
+
+    assert.match(
+      html,
+      /class="panel-group" style="--panel-columns: 2;" role="group" aria-label="Computing pioneers"/,
+    );
+    assert.match(html, /<figcaption>Alan Turing, 1912-1954<\/figcaption>/);
+    assert.match(html, /<figcaption>John von Neumann, 1903-1957<\/figcaption>/);
+    assert.strictEqual((html.match(/class="image-container"/g) || []).length, 2);
+  });
+
+  it("rejects invalid panel group attributes", () => {
+    assert.throws(
+      () => marked.parse(':::panels columns="0"\n![Panel](panel.png)\n:::'),
+      /Panel columns must be an integer from 1 to 6/,
+    );
+    assert.throws(
+      () => marked.parse(':::panels width="wide"\n![Panel](panel.png)\n:::'),
+      /Unsupported panels attribute: width/,
+    );
+    assert.throws(
+      () => marked.parse(':::panels columns="2" columns="3"\n![Panel](panel.png)\n:::'),
+      /Duplicate panels attribute: columns/,
+    );
+  });
+
   it("marks dialogue adjacent to a sized image for width synchronization", () => {
     const html = marked.parse('![](images/panel.png "size:60%")\n> Dialogue');
 
