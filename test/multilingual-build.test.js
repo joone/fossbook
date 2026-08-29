@@ -114,7 +114,7 @@ describe("Multilingual site build", () => {
     );
     fs.writeFileSync(
       path.join(tempDir, "fossbook.config.ko.js"),
-      'module.exports = { blogName: "나의 블로그", authorName: "이수현", authorDescription: "한국어 작가 소개", blogDescription: "한국어 블로그", homeLabel: "대문", allPostsLabel: "모든 글", aboutLabel: "소개", tagsLabel: "태그" };\n',
+      'module.exports = { blogName: "나의 블로그", authorName: "이수현", authorDescription: "한국어 작가 소개", blogDescription: "한국어 블로그", homeLabel: "대문", allPostsLabel: "모든 글", aboutLabel: "소개", tagsLabel: "태그", allTagsLabel: "모든 태그" };\n',
     );
     config.languageConfigs = createLanguageConfigs(config, configPath);
 
@@ -152,6 +152,10 @@ describe("Multilingual site build", () => {
     );
     const koreanTagList = fs.readFileSync(
       path.join(outputDir, "ko", "tags", "index.html"),
+      "utf8",
+    );
+    const englishTagList = fs.readFileSync(
+      path.join(outputDir, "tags", "index.html"),
       "utf8",
     );
     const koreanTag = fs.readFileSync(
@@ -219,6 +223,14 @@ describe("Multilingual site build", () => {
     assert.match(koreanTagList, /href="\/ko\/">대문<\/a>/);
     assert.match(koreanTagList, /href="\/ko\/all_posts">모든 글<\/a>/);
     assert.match(koreanTagList, /href="\/ko\/about">소개<\/a>/);
+    assert.match(koreanTagList, /<title>나의 블로그: 모든 태그<\/title>/);
+    assert.match(koreanTagList, /<h1 class="page-title">모든 태그<\/h1>/);
+    assert.match(koreanTagList, /href="\/tags\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
+    assert.match(koreanTagList, /href="\/ko\/tags\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
+    assert.match(englishTagList, /<h1 class="page-title">All tags<\/h1>/);
+    assert.match(englishTagList, /href="\/tags\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
+    assert.match(englishTagList, /href="\/ko\/tags\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
+    assert.match(englishTagList, /hreflang="ko" href="https:\/\/example\.com\/ko\/tags\/"/);
     assert.match(koreanTag, /href="\/ko\/tags">태그<\/a>/);
     assert.strictEqual(
       fs.existsSync(path.join(outputDir, "ko", "posts", "english-only", "index.html")),

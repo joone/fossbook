@@ -220,6 +220,7 @@ module.exports = {
   allPostsLabel: "모든 글",
   aboutLabel: "소개",
   tagsLabel: "태그",
+  allTagsLabel: "모든 태그",
 };
 ```
 

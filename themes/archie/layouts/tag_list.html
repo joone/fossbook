@@ -11,6 +11,8 @@
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.config.blogName}: ${data.pageTitle}</title>
+        <link rel="canonical" href="${page.url}" />
+        ${page.alternateLanguageLinks()}
         ${page.openGraph("website")}
     </head>
     <body>
@@ -24,7 +26,10 @@
                   ${page.config.tagsLabel || "Tags"}
                 </nav>
             </header>
-              <h1 class="page-title">${data.pageTitle}</h1>
+              <div class="title">
+                <h1 class="page-title">${data.pageTitle}</h1>
+                ${page.languageSwitcher()}
+              </div>
               <div class="tag-cloud">
               <ul class="tags">
                 ${data.tags
