@@ -10,6 +10,8 @@
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.config.blogName}: ${data.pageTitle}</title>
+        <link rel="canonical" href="${page.url}" />
+        ${page.alternateLanguageLinks()}
         ${page.openGraph("website")}
     </head>
     <body>
@@ -17,13 +19,16 @@
             <header>
                 <div class="main">${page.config.blogName}</div>
                 <nav>
-                  <a href="${page.config.basePath}">Home</a>
+                  <a href="${page.config.basePath}">${page.config.homeLabel || "Home"}</a>
                   ${data.pageTitle}
-                  <a href="${page.config.basePath}about">About</a>
-                  <a href="${page.config.basePath}tags">Tags</a>
+                  <a href="${page.config.basePath}about">${page.config.aboutLabel || "About"}</a>
+                  <a href="${page.config.basePath}tags">${page.config.tagsLabel || "Tags"}</a>
                 </nav>
             </header>
-              <h1 class="page-title">${data.pageTitle}</h1>
+              <div class="title">
+                <h1 class="page-title">${data.pageTitle}</h1>
+                ${page.languageSwitcher()}
+              </div>
               <ul class="posts">
                 ${data.posts
                   .map(

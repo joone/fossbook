@@ -40,6 +40,7 @@ describe("Comic transcript toggle", () => {
       true,
     );
     assert.match(styles, /html:lang\(ko\)\s*{\s*font-family: 'NanumSquareNeo', sans-serif;/);
+    assert.match(styles, /html:lang\(ko\) header,\s*html:lang\(ko\) nav\s*{\s*font-family: 'NanumSquareNeo', sans-serif;/);
     assert.match(styles, /html:lang\(ko\) blockquote\s*{\s*font-family: 'NanumHimNaeRaNeunMarBoDan', 'NanumSquareNeo', sans-serif;\s*font-size: 1\.3rem;\s*line-height: 1\.2;/);
     assert.match(styles, /html:lang\(ko\) blockquote p\s*{\s*line-height: inherit;/);
   });

@@ -28,10 +28,10 @@
                   ${page.config.blogName}
                 </div>
                 <nav class="site-navigation">
-                  <a href="${page.config.basePath}">Home</a>
-                  <a href="${page.config.basePath}all_posts">All posts</a>
-                  About
-                  <a href="${page.config.basePath}tags">Tags</a>
+                  <a href="${page.config.basePath}">${page.config.homeLabel || "Home"}</a>
+                  <a href="${page.config.basePath}all_posts">${page.config.allPostsLabel || "All posts"}</a>
+                  ${page.config.aboutLabel || "About"}
+                  <a href="${page.config.basePath}tags">${page.config.tagsLabel || "Tags"}</a>
                 </nav>
             </header>
             <main>

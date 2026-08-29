@@ -331,6 +331,10 @@
   nav {
     font-family: 'Roboto Mono', monospace;
   }
+  html:lang(ko) header,
+  html:lang(ko) nav {
+    font-family: 'NanumSquareNeo', sans-serif;
+  }
   nav.post-navigation {
     display: flex;
     justify-content: end;

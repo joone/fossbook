@@ -24,10 +24,10 @@
                   ${page.languageSwitcher()}
                 </div>
                 <nav>
-                  Home
-                  <a href="${page.config.basePath}all_posts">All posts</a>
-                  <a href="${page.config.basePath}about">About</a>
-                  <a href="${page.config.basePath}tags">Tags</a>
+                  ${page.config.homeLabel || "Home"}
+                  <a href="${page.config.basePath}all_posts">${page.config.allPostsLabel || "All posts"}</a>
+                  <a href="${page.config.basePath}about">${page.config.aboutLabel || "About"}</a>
+                  <a href="${page.config.basePath}tags">${page.config.tagsLabel || "Tags"}</a>
                 </nav>
             </header>
 

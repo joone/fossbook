@@ -216,6 +216,10 @@ module.exports = {
   authorName: "이수현",
   authorDescription: "오픈 소스 개발자이자 작가",
   blogDescription: "한국어 블로그",
+  homeLabel: "대문",
+  allPostsLabel: "모든 글",
+  aboutLabel: "소개",
+  tagsLabel: "태그",
 };
 ```
 
