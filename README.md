@@ -105,12 +105,7 @@ module.exports = {
   defaultLanguageInSubdir: false,
   languages: {
     en: { languageName: "English", locale: "en-US" },
-    ko: {
-      languageName: "한국어",
-      locale: "ko-KR",
-      blogName: "나의 블로그",
-      blogDescription: "한국어 블로그",
-    },
+    ko: { languageName: "한국어", locale: "ko-KR" },
   },
 
   // Optional comments (see "Comments" below)
@@ -192,8 +187,6 @@ module.exports = {
     ko: {
       languageName: "한국어",
       locale: "ko-KR",
-      blogName: "나의 블로그",
-      blogDescription: "한국어 블로그",
     },
     ja: {
       languageName: "日本語",
@@ -203,14 +196,38 @@ module.exports = {
 };
 ```
 
+Put localized blog information in a sibling config file for each language. For
+example, `fossbook.config.en.js` contains:
+
+```js
+module.exports = {
+  blogName: "My Blog",
+  authorName: "Jane Doe",
+  authorDescription: "Open source developer and writer",
+  blogDescription: "An English-language blog",
+};
+```
+
+And `fossbook.config.ko.js` contains:
+
+```js
+module.exports = {
+  blogName: "나의 블로그",
+  authorName: "이수현",
+  authorDescription: "오픈 소스 개발자이자 작가",
+  blogDescription: "한국어 블로그",
+};
+```
+
 - `defaultLanguage` identifies the language represented by `index.md` and
   `about.md`.
 - `defaultLanguageInSubdir: false` keeps the default language at the site root.
   Other languages are generated below their language code, such as `/ko/`.
 - Set `defaultLanguageInSubdir: true` to generate the default language below
   its code as well, such as `/en/`.
-- Each language can override site values such as `blogName` and
-  `blogDescription`.
+- Language config files use the main config filename with the language code
+  inserted before the extension: `fossbook.config.<language>.js`.
+- Values omitted from a language config fall back to `fossbook.config.js`.
 - `locale` controls language-specific date formatting.
 - Language keys should use standard language tags such as `en`, `ko`, `ja`, or
   `zh-Hant`.

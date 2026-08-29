@@ -77,8 +77,8 @@ describe("Multilingual site build", () => {
 
     const config = {
       blogName: "My Blog",
-      authorName: "",
-      authorDescription: "",
+      authorName: "Default author",
+      authorDescription: "Default author description",
       authorWebsite: "",
       blogDescription: "A blog",
       blogsite: "https://example.com",
@@ -96,7 +96,7 @@ describe("Multilingual site build", () => {
       defaultLanguageInSubdir: false,
       languages: {
         en: { languageName: "English", locale: "en-US" },
-        ko: { languageName: "한국어", locale: "ko-KR", blogName: "나의 블로그" },
+        ko: { languageName: "한국어", locale: "ko-KR" },
       },
       themePath: path.resolve(__dirname, "../themes/archie"),
       dev: {
@@ -107,7 +107,16 @@ describe("Multilingual site build", () => {
         staticDir: path.join(tempDir, "static"),
       },
     };
-    config.languageConfigs = createLanguageConfigs(config);
+    const configPath = path.join(tempDir, "fossbook.config.js");
+    fs.writeFileSync(
+      path.join(tempDir, "fossbook.config.en.js"),
+      'module.exports = { blogName: "My Blog", authorName: "Jane Doe", authorDescription: "English author", blogDescription: "A blog" };\n',
+    );
+    fs.writeFileSync(
+      path.join(tempDir, "fossbook.config.ko.js"),
+      'module.exports = { blogName: "나의 블로그", authorName: "이수현", authorDescription: "한국어 작가 소개", blogDescription: "한국어 블로그" };\n',
+    );
+    config.languageConfigs = createLanguageConfigs(config, configPath);
 
     build(config);
 
@@ -159,9 +168,15 @@ describe("Multilingual site build", () => {
     assert.match(englishHome, /href="\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
     assert.match(englishHome, /href="\/ko\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
     assert.match(englishHome, /hreflang="ko" href="https:\/\/example\.com\/ko\/"/);
+    assert.match(englishHome, /<title>My Blog<\/title>/);
+    assert.match(englishHome, /<p>A blog<\/p>/);
+    assert.match(englishHome, /© \d{4} Jane Doe/);
     assert.match(koreanHome, /한국어 제목/);
     assert.match(koreanHome, /href="\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
     assert.match(koreanHome, /href="\/ko\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
+    assert.match(koreanHome, /<title>나의 블로그<\/title>/);
+    assert.match(koreanHome, /<p>한국어 블로그<\/p>/);
+    assert.match(koreanHome, /© \d{4} 이수현/);
     assert.doesNotMatch(koreanHome, /English only/);
     assert.strictEqual(
       fs.existsSync(path.join(outputDir, "ko", "posts", "english-only", "index.html")),
