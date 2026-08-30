@@ -10,6 +10,7 @@
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.config.blogName}: Entries tagged - ${data.tag}</title>
+        ${page.languagePreference()}
         ${page.openGraph("website")}
     </head>
     <body>

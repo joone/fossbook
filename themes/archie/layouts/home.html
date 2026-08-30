@@ -12,6 +12,7 @@
         <meta name="description" content="${page.config.blogDescription}" />
         <link rel="canonical" href="${page.url}" />
         ${page.alternateLanguageLinks()}
+        ${page.languagePreference(data.prev === null)}
         ${page.openGraph("website")}
         <!-- Twitter Card -->
         ${page.twitterCard("summary")}

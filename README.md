@@ -176,6 +176,12 @@ Fossbook generates a separate static page for each available language. The
 browser loads only the selected language page; changing languages follows a
 normal link and does not require JavaScript.
 
+When a reader uses the language switcher, Fossbook remembers that choice in
+the browser. A later visit to the default-language homepage redirects to the
+remembered language's homepage. Direct links to posts and other pages are
+never redirected, and language links continue to work when browser storage is
+unavailable.
+
 ### Configuration
 
 Add the languages supported by the site to `fossbook.config.js`:

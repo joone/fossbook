@@ -171,6 +171,8 @@ describe("Multilingual site build", () => {
     assert.match(englishPost, /hreflang="en" href="https:\/\/example\.com\/posts\/translated\/"/);
     assert.match(englishPost, /hreflang="ko" href="https:\/\/example\.com\/ko\/posts\/translated\/"/);
     assert.match(englishPost, /hreflang="x-default" href="https:\/\/example\.com\/posts\/translated\/"/);
+    assert.match(englishPost, /fossbook-language/);
+    assert.doesNotMatch(englishPost, /location\.replace/);
     assert.match(koreanPost, /<html lang="ko">/);
     assert.match(koreanPost, /한국어 제목/);
     assert.match(koreanPost, /class="language-switcher"/);
@@ -182,6 +184,7 @@ describe("Multilingual site build", () => {
     assert.match(koreanPost, /href="\/ko\/posts\/translated\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
     assert.doesNotMatch(englishOnlyPost, /class="language-switcher"/);
     assert.doesNotMatch(englishOnlyPost, /hreflang="ko"/);
+    assert.doesNotMatch(englishOnlyPost, /fossbook-language/);
     assert.match(englishAbout, /About this site/);
     assert.match(englishAbout, /href="\/about\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
     assert.match(englishAbout, /href="\/ko\/about\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
@@ -194,6 +197,8 @@ describe("Multilingual site build", () => {
     assert.match(englishHome, /href="\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
     assert.match(englishHome, /href="\/ko\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
     assert.match(englishHome, /hreflang="ko" href="https:\/\/example\.com\/ko\/"/);
+    assert.match(englishHome, /fossbook-language/);
+    assert.match(englishHome, /location\.replace/);
     assert.match(englishHome, /<title>My Blog<\/title>/);
     assert.match(englishHome, /<p>A blog<\/p>/);
     assert.match(englishHome, /© \d{4} Jane Doe/);
@@ -203,6 +208,8 @@ describe("Multilingual site build", () => {
     assert.match(koreanHome, /href="\/ko\/tags">태그<\/a>/);
     assert.match(koreanHome, /href="\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
     assert.match(koreanHome, /href="\/ko\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
+    assert.match(koreanHome, /fossbook-language/);
+    assert.doesNotMatch(koreanHome, /location\.replace/);
     assert.match(koreanHome, /<title>나의 블로그<\/title>/);
     assert.match(koreanHome, /<p>한국어 블로그<\/p>/);
     assert.match(koreanHome, /© \d{4} 이수현/);
