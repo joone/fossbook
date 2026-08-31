@@ -542,6 +542,16 @@
   display: flex;
   justify-content: space-between;
   }
+  .post-tags ul.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.8rem;
+    margin: 0;
+    padding: 0;
+  }
+  .post-tags ul.tags li {
+    text-indent: 0;
+  }
   .tags li::before{
     content: "🏷 ";
   }
