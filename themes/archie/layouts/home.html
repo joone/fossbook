@@ -47,16 +47,17 @@
                          <img src="${page.config.basePath}${post.path}/images/${post.image}" alt="${post.title}">
                       </div>` : ''}
                       <div class="description">${post.description || ''}</div>
-                      <a class="readmore" href="${page.config.basePath}${post.path}">Read more ⟶</a>
+                      <a class="readmore" href="${page.config.basePath}${post.path}">${page.config.readMoreLabel || "Read more"} ⟶</a>
                     </section>`,
                   )
                   .join("")}
               <ul class="pagination" role="navigation">
                 <span class="page-item page-prev">
-                ${data.prev ? `<a href="${page.config.basePath}page/${data.prev}.html" class="page-link" aria-label="Previous">← Prev</a>` : `<span class="page-link disable-link"><span aria-hidden="true">← Prev</span></span>`}
+                ${data.prev ? `<a href="${page.config.basePath}page/${data.prev}.html" class="page-link" aria-label="${page.config.previousPageLabel || "Previous"}">← ${page.config.previousPageLabel || "Prev"}</a>` : `<span class="page-link disable-link"><span aria-hidden="true">← ${page.config.previousPageLabel || "Prev"}</span></span>`}
                 </span>
+                <span class="pagination-separator" aria-hidden="true">|</span>
                 <span class="page-item page-next">
-                ${data.next ? `<a href="${page.config.basePath}page/${data.next}.html" class="page-link" aria-label="Next">Next →</a>` : `<span class="page-link disable-link"><span aria-hidden="true">Next →</span></span>`}
+                ${data.next ? `<a href="${page.config.basePath}page/${data.next}.html" class="page-link" aria-label="${page.config.nextPageLabel || "Next"}">${page.config.nextPageLabel || "Next"} →</a>` : `<span class="page-link disable-link"><span aria-hidden="true">${page.config.nextPageLabel || "Next"} →</span></span>`}
                 </span>
               </ul>
             </main>

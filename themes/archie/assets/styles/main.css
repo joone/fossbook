@@ -456,6 +456,11 @@
     font-size: 1rem;
   }
 
+  .readmore {
+    display: inline-block;
+    margin-top: 0.75rem;
+  }
+
   /* navigation */
   h1.assistive-text {
     display: none;
@@ -516,6 +521,11 @@
 
   .disable-link {
     color: grey;
+  }
+
+  .pagination-separator {
+    color: grey;
+    margin: 0 0.5rem;
   }
   
   /* Callout */

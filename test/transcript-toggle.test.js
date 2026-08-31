@@ -85,6 +85,14 @@ describe("Comic transcript toggle", () => {
     assert.match(styles, /\.tags a\s*{\s*border-bottom: 2px solid var\(--maincolor\);/);
   });
 
+  it("separates read-more links from post descriptions", () => {
+    assert.match(styles, /\.readmore\s*{\s*display: inline-block;\s*margin-top: 0\.75rem;/);
+  });
+
+  it("spaces the home pagination separator", () => {
+    assert.match(styles, /\.pagination-separator\s*{\s*color: grey;\s*margin: 0 0\.5rem;/);
+  });
+
   it("aligns ordered reference list markers", () => {
     assert.match(styles, /ol > li::marker\s*{\s*font-family: 'Roboto Mono', monospace;/);
     assert.match(styles, /html:lang\(ko\) ol > li::marker\s*{\s*font-family: sans-serif;\s*font-variant-numeric: tabular-nums;/);
