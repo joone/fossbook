@@ -2,6 +2,32 @@ const assert = require("assert");
 const marked = require("../lib/mod/marked");
 
 describe("Markdown rendering", () => {
+  it("renders bare Wikipedia URLs as localized citations", () => {
+    const korean = marked.parse("- [1] https://ko.wikipedia.org/wiki/튜링_기계");
+    const english = marked.parse("- [1] https://en.wikipedia.org/wiki/Turing_machine");
+    const autolink = marked.parse("- [1] <https://ko.wikipedia.org/wiki/앨런_튜링>");
+    const punctuated = marked.parse("See https://en.wikipedia.org/wiki/History_of_computing.");
+    const references = marked.parse(`- [1] https://ko.wikipedia.org/wiki/튜링_기계
+- [2] https://ko.wikipedia.org/wiki/앨런_튜링
+- [3] https://ko.wikipedia.org/wiki/컴퓨터의_역사`);
+
+    assert.match(korean, /<a href="https:\/\/ko\.wikipedia\.org\/wiki\/튜링_기계">위키백과, 튜링 기계<\/a>/);
+    assert.match(english, /<a href="https:\/\/en\.wikipedia\.org\/wiki\/Turing_machine">Wikipedia, Turing machine<\/a>/);
+    assert.match(autolink, /<a href="https:\/\/ko\.wikipedia\.org\/wiki\/앨런_튜링">위키백과, 앨런 튜링<\/a>/);
+    assert.match(punctuated, /<a href="https:\/\/en\.wikipedia\.org\/wiki\/History_of_computing">Wikipedia, History of computing<\/a>\.<\/p>/);
+    assert.strictEqual((references.match(/<li>/g) || []).length, 3);
+    assert.match(references, /\[1\] <a[^>]+>위키백과, 튜링 기계<\/a>/);
+    assert.match(references, /\[2\] <a[^>]+>위키백과, 앨런 튜링<\/a>/);
+    assert.match(references, /\[3\] <a[^>]+>위키백과, 컴퓨터의 역사<\/a>/);
+  });
+
+  it("preserves explicitly labeled Wikipedia links", () => {
+    const html = marked.parse("[튜링의 계산 모형](https://ko.wikipedia.org/wiki/튜링_기계)");
+
+    assert.match(html, />튜링의 계산 모형<\/a>/);
+    assert.doesNotMatch(html, /위키백과,/);
+  });
+
   it("renders a responsive group of captioned panels", () => {
     const html = marked.parse(`:::panels columns="2" label="Computing pioneers"
 ![Alan Turing](images/turing.png "Alan Turing, 1912-1954")
