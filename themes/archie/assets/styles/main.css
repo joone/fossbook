@@ -280,10 +280,14 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: var(--panel-border, 1px solid #575752);
+    border: 1px solid #575752;
     border-radius: var(--panel-border-radius, 0);
     background: var(--panel-background, #fff);
     box-shadow: var(--panel-box-shadow, none);
+  }
+
+  .panel-group-boxed[style*="--panel-border:"] > .image-container > figure {
+    border: var(--panel-border);
   }
 
   .panel-group-boxed[style*="--panel-border-color:"] > .image-container > figure {
@@ -312,7 +316,7 @@
   .comic-panel {
     margin: 2rem 0;
     padding: 1rem;
-    border: var(--comic-panel-border, 2px solid #575752);
+    border: 2px solid #575752;
     border-radius: var(--comic-panel-border-radius, 0);
     background: var(--comic-panel-background, #fff);
     box-shadow: var(--comic-panel-shadow, 4px 4px 0 rgba(70, 70, 66, 0.14));
