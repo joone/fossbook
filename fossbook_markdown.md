@@ -97,6 +97,23 @@ Images inside the group retain the usual image caption, size, and alignment
 features. Unsupported, duplicate, or malformed attributes stop the build with
 an error instead of being ignored.
 
+Add `boxed="true"` to give each panel an equal-height border and background.
+The optional `style` attribute customizes those cards using CSS declaration
+syntax:
+
+```markdown
+:::panels columns="3" boxed="true" style="border: 2px solid #333; box-shadow: 2px 2px 0 #bbb; gap: 1rem;"
+![First panel](images/first.png "First caption")
+![Second panel](images/second.png "Second caption")
+![Third panel](images/third.png "Third caption")
+:::
+```
+
+Supported properties are `border`, `border-color`, `border-width`,
+`border-style`, `border-radius`, `box-shadow`, `background`,
+`background-color`, and `gap`. The `style` attribute requires `boxed="true"`.
+Box shadows are disabled by default and appear only when `box-shadow` is set.
+
 ## Aligned Links
 
 Links accept the same alignment directive in their optional title:
