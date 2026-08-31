@@ -168,8 +168,8 @@ Use `gap: 1rem` or another CSS length. Other style properties are rejected.
 
 Bare Wikipedia article URLs are rendered as compact, localized citations. For
 example, `https://ko.wikipedia.org/wiki/튜링_기계` becomes a link labeled
-`위키백과, 튜링 기계`, while an English Wikipedia URL is labeled
-`Wikipedia, Article title`. Explicit Markdown link text is always preserved:
+`튜링 기계, 위키백과`, while an English Wikipedia URL is labeled
+`Article title, Wikipedia`. Explicit Markdown link text is always preserved:
 
 ```markdown
 - [1] https://ko.wikipedia.org/wiki/튜링_기계
