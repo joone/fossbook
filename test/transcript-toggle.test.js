@@ -25,6 +25,28 @@ describe("Comic transcript toggle", () => {
     assert.match(template, /localStorage\.setItem/);
   });
 
+  it("versions local stylesheets in every theme layout", () => {
+    const layoutsDir = path.join(__dirname, "../themes/archie/layouts");
+    const layoutFiles = [
+      "all_posts.html",
+      "home.html",
+      "page.html",
+      "post.html",
+      "tag_list.html",
+      "tag.html",
+    ];
+
+    layoutFiles.forEach((layoutFile) => {
+      const layout = fs.readFileSync(path.join(layoutsDir, layoutFile), "utf8");
+      const localStylesheets = layout.match(/\$\{page\.config\.basePath\}styles\/[a-z]+\.css[^\"]*/g) || [];
+
+      assert.ok(localStylesheets.length >= 2, `${layoutFile} should load local stylesheets`);
+      localStylesheets.forEach((stylesheet) => {
+        assert.match(stylesheet, /\?v=\$\{page\.config\.version\}$/);
+      });
+    });
+  });
+
   it("keeps transcripts visible when printing", () => {
     assert.match(styles, /@media print[\s\S]*\.transcripts-hidden \.image-dialogue\s*{\s*display: flex;/);
   });
