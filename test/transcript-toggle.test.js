@@ -62,6 +62,10 @@ describe("Comic transcript toggle", () => {
     assert.match(styles, /\.tags a\s*{\s*border-bottom: 2px solid var\(--maincolor\);/);
   });
 
+  it("aligns ordered reference list markers", () => {
+    assert.match(styles, /ol > li::marker\s*{\s*font-family: 'Roboto Mono', monospace;/);
+  });
+
   it("lays out panel groups responsively", () => {
     assert.match(styles, /\.panel-group\s*{[\s\S]*?display: grid;[\s\S]*?grid-template-columns: repeat\(var\(--panel-columns\), minmax\(0, 1fr\)\);/);
     assert.match(styles, /@media screen and \(max-width: 599px\)[\s\S]*?\.panel-group\s*{\s*grid-template-columns: 1fr;/);

@@ -179,6 +179,10 @@
     font-weight: bold;
   }
 
+  ol > li::marker {
+    font-family: 'Roboto Mono', monospace;
+  }
+
 /*
   ul.pagination {
     display: flex;
