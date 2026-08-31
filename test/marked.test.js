@@ -17,19 +17,6 @@ describe("Markdown rendering", () => {
     assert.strictEqual((html.match(/class="image-container"/g) || []).length, 2);
   });
 
-  it("renders opt-in boxed panels with equal-height styling hooks", () => {
-    const html = marked.parse(`:::panels columns="3" boxed="true" style="border: 2px solid #333; box-shadow: 2px 2px 0 #bbb; gap: 1rem;" label="Computing pioneers"
-![Alan Turing](images/turing.png "Alan Turing")
-![John von Neumann](images/von-neumann.png "John von Neumann")
-![Kurt Gödel](images/godel.png "Kurt Gödel")
-:::`);
-
-    assert.match(
-      html,
-      /class="panel-group panel-group-boxed" style="--panel-columns: 3; --panel-border: 2px solid #333; --panel-box-shadow: 2px 2px 0 #bbb; --panel-gap: 1rem;" role="group"/,
-    );
-  });
-
   it("nests comic panels inside a longer-fenced panel grid", () => {
     const html = marked.parse(`::::panels columns="2" style="gap: 1rem;" label="Two scenes"
 :::panel style="border-width: 2px;"
@@ -69,20 +56,16 @@ Second scene.
       /Duplicate panels attribute: columns/,
     );
     assert.throws(
-      () => marked.parse(':::panels boxed="yes"\n![Panel](panel.png)\n:::'),
-      /Panel boxed must be "true"/,
-    );
-    assert.throws(
       () => marked.parse(':::panels style="box-shadow: none;"\n![Panel](panel.png)\n:::'),
-      /Panel card styles require boxed="true"/,
+      /Unsupported panel group style property: box-shadow/,
     );
     assert.throws(
-      () => marked.parse(':::panels boxed="true" style="color: red;"\n![Panel](panel.png)\n:::'),
-      /Unsupported panel style property: color/,
+      () => marked.parse(':::panels boxed="true"\n![Panel](panel.png)\n:::'),
+      /Unsupported panels attribute: boxed/,
     );
     assert.throws(
-      () => marked.parse(':::panels boxed="true" style="background: url(evil);"\n![Panel](panel.png)\n:::'),
-      /Invalid value for panel style property: background/,
+      () => marked.parse(':::panels rounded="true"\n![Panel](panel.png)\n:::'),
+      /Unsupported panels attribute: rounded/,
     );
   });
 
@@ -113,6 +96,16 @@ Turing described an abstract machine that reads symbols from a tape.
     assert.throws(
       () => marked.parse(':::panel divider="false"\nText\n:::'),
       /Panel divider must be "true"/,
+    );
+  });
+
+  it("adds preset rounded corners to comic panels", () => {
+    const html = marked.parse(':::panel rounded="true"\nText\n:::');
+
+    assert.match(html, /<section class="comic-panel comic-panel-rounded">/);
+    assert.throws(
+      () => marked.parse(':::panel rounded="false"\nText\n:::'),
+      /Panel rounded must be "true"/,
     );
   });
 

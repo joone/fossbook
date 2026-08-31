@@ -93,9 +93,11 @@ Introductory prose for the scene.
 Supported properties are `border`, `border-color`, `border-width`,
 `border-style`, `border-radius`, `box-shadow`, `background`, and
 `background-color`. A `panel` is already boxed, so it does not use the
-`boxed="true"` attribute. Dialogue beneath an image has no separator by
-default. Add `divider="true"` to draw a line between that dialogue and the
-content that follows:
+`boxed="true"` attribute. Add `rounded="true"` for subtly irregular,
+hand-drawn corners without writing a `border-radius` value. An explicit
+`style="border-radius: ...;"` overrides this preset. Dialogue beneath an image
+has no separator by default. Add `divider="true"` to draw a line between that
+dialogue and the content that follows:
 
 ```markdown
 :::panel divider="true"
@@ -146,36 +148,21 @@ container. Nested panels stretch to equal heights within each grid row.
 Use the optional `label` attribute to give the group an accessible name.
 Images inside the group retain the usual image caption, size, and alignment
 features. Unsupported, duplicate, or malformed attributes stop the build with
-an error instead of being ignored.
+an error instead of being ignored. A `panels` container provides layout only;
+it does not draw borders, backgrounds, shadows, or rounded corners. Use nested
+`panel` containers when each grid item needs visible framing.
 
-Add `boxed="true"` to give each panel an equal-height border and background.
-The optional `style` attribute customizes those cards using CSS declaration
-syntax:
+The optional `style` attribute supports only grid spacing:
 
 ```markdown
-:::panels columns="3" boxed="true" style="border: 2px solid #333; box-shadow: 2px 2px 0 #bbb; gap: 1rem;"
+:::panels columns="3" style="gap: 1rem;"
 ![First panel](images/first.png "First caption")
 ![Second panel](images/second.png "Second caption")
 ![Third panel](images/third.png "Third caption")
 :::
 ```
 
-Supported properties and example values are:
-
-- `border: 2px solid #333`
-- `border-color: #333`
-- `border-width: 2px`
-- `border-style: dashed`
-- `border-radius: 4px`
-- `box-shadow: 2px 2px 0 #bbb`
-- `background: #fff`
-- `background-color: #f5f5f5`
-- `gap: 1rem`
-
-Separate multiple declarations with semicolons. `gap` can be used on any
-`panels` container. The card properties require `boxed="true"` and apply to
-direct image cards; nested `panel` containers define their own card styles.
-Box shadows are disabled by default and appear only when `box-shadow` is set.
+Use `gap: 1rem` or another CSS length. Other style properties are rejected.
 
 ## Aligned Links
 

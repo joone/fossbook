@@ -69,29 +69,20 @@ describe("Comic transcript toggle", () => {
     assert.match(styles, /\.panel-group figure\s*{[\s\S]*?padding: 0;/);
   });
 
-  it("gives opt-in portrait panels equal framed heights", () => {
-    assert.match(styles, /\.panel-group-boxed\s*{\s*align-items: stretch;\s*grid-auto-rows: 1fr;\s*gap: var\(--panel-gap, 0\.75rem\);/);
-    assert.match(styles, /\.panel-group-boxed > \.image-container > figure\s*{[\s\S]*?height: 100%;[\s\S]*?display: flex;[\s\S]*?border: 1px solid #575752;[\s\S]*?box-shadow: var\(--panel-box-shadow, none\);/);
-    assert.doesNotMatch(styles, /border: var\(--panel-border,/);
-    assert.match(styles, /\.panel-group-boxed\[style\*="--panel-border:"\] > \.image-container > figure\s*{\s*border: var\(--panel-border\);/);
-    assert.match(styles, /\.panel-group-boxed\[style\*="--panel-border-color:"\] > \.image-container > figure\s*{\s*border-color: var\(--panel-border-color\);/);
-    assert.match(styles, /\.panel-group-boxed > \.image-container > figure > figcaption\s*{[\s\S]*?flex: 1;[\s\S]*?padding: 0\.75rem;[\s\S]*?font-size: 0\.9rem;/);
-    assert.doesNotMatch(styles, /\.panel-group-boxed > \.image-container > figure > figcaption\s*{[^}]*border-top:/);
-  });
-
   it("stretches nested comic panels without styling their images as cards", () => {
     assert.match(styles, /\.panel-group-nested\s*{\s*align-items: stretch;\s*grid-auto-rows: 1fr;/);
     assert.match(styles, /\.panel-group-nested > \.comic-panel\s*{[\s\S]*?height: 100%;[\s\S]*?margin: 0;/);
-    assert.doesNotMatch(styles, /\.panel-group-boxed figure\s*{/);
+    assert.doesNotMatch(styles, /\.panel-group-boxed/);
   });
 
   it("frames related comic artwork and prose as one panel", () => {
-    assert.match(styles, /\.comic-panel\s*{[\s\S]*?border: 2px solid #575752;[\s\S]*?background: var\(--comic-panel-background, #fff\);/);
+    assert.match(styles, /\.comic-panel\s*{[\s\S]*?border: 1\.5px solid #575752;[\s\S]*?background: var\(--comic-panel-background, #fff\);[\s\S]*?box-shadow: var\(--comic-panel-shadow, 2px 2px 0 rgba\(70, 70, 66, 0\.14\)\);/);
+    assert.match(styles, /\.comic-panel-rounded\s*{\s*--comic-panel-border-radius: 4px 7px 5px 8px \/ 7px 4px 8px 5px;/);
     assert.doesNotMatch(styles, /border: var\(--comic-panel-border,/);
     assert.match(styles, /\.comic-panel\[style\*="--comic-panel-border:"\]\s*{\s*border: var\(--comic-panel-border\);/);
     assert.match(styles, /\.comic-panel\[style\*="--comic-panel-border-width:"\]\s*{\s*border-width: var\(--comic-panel-border-width\);/);
     assert.match(styles, /\.comic-panel \.image-dialogue\s*{\s*margin-bottom: 1rem;\s*}/);
     assert.match(styles, /\.comic-panel-divider \.image-dialogue\s*{\s*padding-bottom: 1rem;\s*border-bottom: 1px solid #575752;/);
-    assert.match(styles, /@media screen and \(max-width: 599px\)[\s\S]*?\.comic-panel\s*{[\s\S]*?border-width: 1px;/);
+    assert.match(styles, /@media screen and \(max-width: 599px\)[\s\S]*?\.comic-panel\s*{[\s\S]*?border-width: 1px;\s*box-shadow: 1px 1px 0 rgba\(70, 70, 66, 0\.14\);/);
   });
 });
