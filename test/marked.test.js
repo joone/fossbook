@@ -166,6 +166,21 @@ Turing described an abstract machine that reads symbols from a tape.
     assert.match(html, /class="blockquote-container image-dialogue"/);
   });
 
+  it("renders easy-to-type straight quotes as Korean dialogue quotes", () => {
+    const korean = marked.parse('![](images/panel.png)\n> "첫 번째" \\\n> "두 번째"', { language: "ko" });
+    const english = marked.parse('![](images/panel.png)\n> "Dialogue"', { language: "en" });
+    const prose = marked.parse('Ordinary "Korean" prose', { language: "ko" });
+    const unmatched = marked.parse('> "미완성', { language: "ko" });
+
+    assert.strictEqual((korean.match(/dialogue-quote-open/g) || []).length, 2);
+    assert.strictEqual((korean.match(/dialogue-quote-close/g) || []).length, 2);
+    assert.match(korean, /<span class="dialogue-quote dialogue-quote-open">“<\/span>첫 번째<span class="dialogue-quote dialogue-quote-close">”<\/span>/);
+    assert.match(english, /&quot;Dialogue&quot;/);
+    assert.match(prose, /&quot;Korean&quot;/);
+    assert.match(unmatched, /&quot;미완성/);
+    assert.doesNotMatch(unmatched, /dialogue-quote/);
+  });
+
   it("does not constrain standalone blockquotes", () => {
     const html = marked.parse("> Standalone quote");
 

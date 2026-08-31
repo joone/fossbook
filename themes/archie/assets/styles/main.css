@@ -147,6 +147,10 @@
     line-height: inherit;
   }
 
+  html:lang(ko) .dialogue-quote {
+    font-family: 'NanumSquareNeo', sans-serif;
+  }
+
   @media print {
     .transcript-control {
       display: none;

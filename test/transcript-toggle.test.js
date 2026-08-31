@@ -45,6 +45,7 @@ describe("Comic transcript toggle", () => {
     assert.match(styles, /html:lang\(ko\) header,\s*html:lang\(ko\) nav\s*{\s*font-family: 'NanumSquareNeo', sans-serif;/);
     assert.match(styles, /html:lang\(ko\) blockquote\s*{\s*font-family: 'NanumHimNaeRaNeunMarBoDan', 'NanumSquareNeo', sans-serif;\s*font-size: 1\.3rem;\s*line-height: 1\.2;/);
     assert.match(styles, /html:lang\(ko\) blockquote p\s*{\s*line-height: inherit;/);
+    assert.match(styles, /html:lang\(ko\) \.dialogue-quote\s*{\s*font-family: 'NanumSquareNeo', sans-serif;/);
   });
 
   it("uses font size instead of Markdown prefixes for heading hierarchy", () => {

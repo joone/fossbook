@@ -72,6 +72,10 @@ For multiline dialogue, end each line except the last with a backslash (`\`)
 to insert a visible line break. Without it, Markdown treats consecutive lines
 as part of the same paragraph and the browser displays them as flowing text.
 
+Korean blockquotes can use ordinary straight double quotes (`"`) while
+editing. Fossbook renders each complete pair as distinct opening and closing
+quotation marks. An unmatched quote is left unchanged.
+
 The bundled Archie theme keeps the dialogue width synchronized with a sized
 image and displays a transcript visibility control on posts that contain this
 pattern. A blank line between the image and blockquote is allowed. Intervening
