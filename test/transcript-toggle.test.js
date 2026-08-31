@@ -64,6 +64,7 @@ describe("Comic transcript toggle", () => {
 
   it("aligns ordered reference list markers", () => {
     assert.match(styles, /ol > li::marker\s*{\s*font-family: 'Roboto Mono', monospace;/);
+    assert.match(styles, /html:lang\(ko\) ol > li::marker\s*{\s*font-family: sans-serif;\s*font-variant-numeric: tabular-nums;/);
   });
 
   it("lays out panel groups responsively", () => {

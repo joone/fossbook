@@ -175,6 +175,10 @@
   ol > li::marker {
     font-family: 'Roboto Mono', monospace;
   }
+  html:lang(ko) ol > li::marker {
+    font-family: sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
 
 /*
   ul.pagination {
