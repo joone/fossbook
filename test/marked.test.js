@@ -30,6 +30,31 @@ describe("Markdown rendering", () => {
     );
   });
 
+  it("nests comic panels inside a longer-fenced panel grid", () => {
+    const html = marked.parse(`::::panels columns="2" style="gap: 1rem;" label="Two scenes"
+:::panel style="border-width: 2px;"
+First scene.
+
+![First](first.png)
+:::
+
+:::panel
+Second scene.
+
+![Second](second.png)
+:::
+::::`);
+
+    assert.match(
+      html,
+      /class="panel-group panel-group-nested" style="--panel-columns: 2; --panel-gap: 1rem;" role="group" aria-label="Two scenes"/,
+    );
+    assert.strictEqual((html.match(/class="comic-panel"/g) || []).length, 2);
+    assert.match(html, /style="--comic-panel-border-width: 2px;"/);
+    assert.match(html, /<p>First scene\.<\/p>/);
+    assert.match(html, /<p>Second scene\.<\/p>/);
+  });
+
   it("rejects invalid panel group attributes", () => {
     assert.throws(
       () => marked.parse(':::panels columns="0"\n![Panel](panel.png)\n:::'),
@@ -49,7 +74,7 @@ describe("Markdown rendering", () => {
     );
     assert.throws(
       () => marked.parse(':::panels style="box-shadow: none;"\n![Panel](panel.png)\n:::'),
-      /Panel style requires boxed="true"/,
+      /Panel card styles require boxed="true"/,
     );
     assert.throws(
       () => marked.parse(':::panels boxed="true" style="color: red;"\n![Panel](panel.png)\n:::'),
@@ -61,8 +86,8 @@ describe("Markdown rendering", () => {
     );
   });
 
-  it("groups comic artwork, dialogue, and prose in one semantic box", () => {
-    const html = marked.parse(`:::comic-box label="Turing imagines a universal machine"
+  it("groups comic artwork, dialogue, and prose in one semantic panel", () => {
+    const html = marked.parse(`:::panel label="Turing imagines a universal machine" style="border-width: 3px;"
 ![Alan Turing walking](images/turing.png)
 > "I have an idea."
 
@@ -71,11 +96,35 @@ Turing described an abstract machine that reads symbols from a tape.
 
     assert.match(
       html,
-      /<section class="comic-box" aria-label="Turing imagines a universal machine">/,
+      /<section class="comic-panel" style="--comic-panel-border-width: 3px;" aria-label="Turing imagines a universal machine">/,
     );
     assert.match(html, /class="blockquote-container image-dialogue"/);
     assert.match(html, /<p>Turing described an abstract machine/);
     assert.match(html, /<\/section>/);
+  });
+
+  it("makes the dialogue divider opt-in for comic panels", () => {
+    const withoutDivider = marked.parse(':::panel\n![Scene](scene.png)\n> Dialogue\n:::');
+    const withDivider = marked.parse(':::panel divider="true"\n![Scene](scene.png)\n> Dialogue\n:::');
+
+    assert.match(withoutDivider, /<section class="comic-panel">/);
+    assert.doesNotMatch(withoutDivider, /comic-panel-divider/);
+    assert.match(withDivider, /<section class="comic-panel comic-panel-divider">/);
+    assert.throws(
+      () => marked.parse(':::panel divider="false"\nText\n:::'),
+      /Panel divider must be "true"/,
+    );
+  });
+
+  it("rejects unsupported comic panel attributes and styles", () => {
+    assert.throws(
+      () => marked.parse(':::panel boxed="true"\nText\n:::'),
+      /Unsupported panel attribute: boxed/,
+    );
+    assert.throws(
+      () => marked.parse(':::panel style="gap: 1rem;"\nText\n:::'),
+      /Unsupported panel style property: gap/,
+    );
   });
 
   it("marks dialogue adjacent to a sized image for width synchronization", () => {

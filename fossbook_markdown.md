@@ -77,6 +77,35 @@ image and displays a transcript visibility control on posts that contain this
 pattern. A blank line between the image and blockquote is allowed. Intervening
 prose breaks the association, leaving the blockquote as an ordinary quotation.
 
+### Comic Panels
+
+Wrap related prose, artwork, and dialogue in a bordered `panel` container.
+Use the optional `style` attribute to customize its appearance:
+
+```markdown
+:::panel style="border-width: 3px;"
+Introductory prose for the scene.
+
+![A description of the scene](images/panel.png "A visible caption")
+:::
+```
+
+Supported properties are `border`, `border-color`, `border-width`,
+`border-style`, `border-radius`, `box-shadow`, `background`, and
+`background-color`. A `panel` is already boxed, so it does not use the
+`boxed="true"` attribute. Dialogue beneath an image has no separator by
+default. Add `divider="true"` to draw a line between that dialogue and the
+content that follows:
+
+```markdown
+:::panel divider="true"
+![A description of the scene](images/panel.png)
+> Dialogue shown below the image.
+
+Narration following the dialogue.
+:::
+```
+
 ## Panel Groups
 
 Place images in a `panels` container to arrange them as a responsive grid:
@@ -91,6 +120,28 @@ Place images in a `panels` container to arrange them as a responsive grid:
 The optional `columns` attribute sets the preferred desktop column count and
 accepts integers from `1` to `6`. It defaults to `2`. The bundled Archie theme
 collapses panel groups to one column on screens narrower than 600 pixels.
+
+To put mixed-content comic panels in the grid, use a four-colon fence around
+three-colon `panel` containers:
+
+`````markdown
+::::panels columns="2" style="gap: 1rem;" label="Two scenes"
+:::panel
+First scene narration.
+
+![First scene](images/first.png)
+:::
+
+:::panel style="border-width: 3px;"
+Second scene narration.
+
+![Second scene](images/second.png)
+:::
+::::
+`````
+
+The longer outer fence prevents an inner `:::` from closing the `panels`
+container. Nested panels stretch to equal heights within each grid row.
 
 Use the optional `label` attribute to give the group an accessible name.
 Images inside the group retain the usual image caption, size, and alignment
@@ -109,9 +160,21 @@ syntax:
 :::
 ```
 
-Supported properties are `border`, `border-color`, `border-width`,
-`border-style`, `border-radius`, `box-shadow`, `background`,
-`background-color`, and `gap`. The `style` attribute requires `boxed="true"`.
+Supported properties and example values are:
+
+- `border: 2px solid #333`
+- `border-color: #333`
+- `border-width: 2px`
+- `border-style: dashed`
+- `border-radius: 4px`
+- `box-shadow: 2px 2px 0 #bbb`
+- `background: #fff`
+- `background-color: #f5f5f5`
+- `gap: 1rem`
+
+Separate multiple declarations with semicolons. `gap` can be used on any
+`panels` container. The card properties require `boxed="true"` and apply to
+direct image cards; nested `panel` containers define their own card styles.
 Box shadows are disabled by default and appear only when `box-shadow` is set.
 
 ## Aligned Links
