@@ -58,7 +58,7 @@
                   </div>
                   ${page.body.includes('class="blockquote-container image-dialogue"') ? `<div class="transcript-control">
                     <div class="transcript-toggle">
-                      <label for="comic-transcript-toggle">Comic transcript</label>
+                      <label for="comic-transcript-toggle">${page.config.transcriptLabel || "Display dialogue text"}</label>
                       <input id="comic-transcript-toggle" type="checkbox" role="switch" aria-controls="comic-transcript" checked>
                     </div>
                   </div>` : ""}

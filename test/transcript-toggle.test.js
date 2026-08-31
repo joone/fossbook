@@ -14,6 +14,8 @@ describe("Comic transcript toggle", () => {
 
   it("renders an accessible switch only for posts with image dialogue", () => {
     assert.match(template, /page\.body\.includes\('class="blockquote-container image-dialogue"'\)/);
+    assert.match(template, /page\.config\.transcriptLabel \|\| "Display dialogue text"/);
+    assert.doesNotMatch(template, />Comic transcript</);
     assert.match(template, /type="checkbox" role="switch"/);
     assert.match(template, /aria-controls="comic-transcript"/);
   });
