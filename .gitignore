@@ -1,6 +1,7 @@
 node_modules
 dist
 public/
-docs
+docs/*
+!docs/images/
 .env
 .loz_logs

@@ -1,20 +1,38 @@
 # Fossbook
 
-A lightweight static blog site generator for GitHub Pages, similar to Hugo but built with Node.js.
-It was originally part of the [F/OSS Comics blog](https://fosscomics.com) and is now an independent, installable package that anyone can use.
+A Markdown-based authoring and web-publishing tool for comics, illustrated
+stories, and articles. Fossbook extends familiar Markdown with comic panels,
+responsive layouts, image-linked dialogue, and reader-controlled transcripts,
+then generates a complete static site that can be published on GitHub Pages.
+
+Fossbook began as the publishing system for
+[F/OSS Comics](https://fosscomics.com). It is now an independent Node.js
+package for creators who want to keep words, artwork, translations, and site
+configuration in portable source files rather than a proprietary editor.
+
+![A cartoonist assembles colorful blocks into a larger structure, representing Fossbook's composable publishing workflow.](docs/images/fossbook-comic-authoring.png)
+
+_Artwork from [F/OSS Comics](https://fosscomics.com)._
 
 ## Features
 
-- **Markdown-based** — Write posts in Markdown with YAML front-matter
-- **Pagination** — Automatic home page pagination
-- **Tags** — Tag-based categorization with tag index and per-tag listing pages
-- **Theming** — Bundled Archie theme with support for custom themes
-- **SEO** — Open Graph and Twitter Card meta tags out of the box
-- **Multilingual sites** — Generate language-specific pages with translation links and `hreflang` metadata
-- **GitHub Pages** — Built-in CNAME support for custom domains
-- **Dev server** — Local preview server with Express
-- **Syntax highlighting** — Code block highlighting via highlight.js
-- **Mermaid diagrams** — ` ```mermaid ` code blocks render as diagrams
+- **Comic authoring in Markdown** — Combine artwork, captions, dialogue,
+  narration, and links in readable text files
+- **Panels and responsive layouts** — Arrange images or mixed-content comic
+  panels in grids that collapse for narrow screens
+- **Accessible transcripts** — Associate dialogue with artwork and let readers
+  show or hide transcript text while keeping it available for printing
+- **Image presentation controls** — Set image size, alignment, captions, panel
+  borders, dividers, backgrounds, and spacing with constrained Markdown syntax
+- **Multilingual publishing** — Keep translations beside the original work and
+  generate language-specific pages, navigation, and `hreflang` metadata
+- **Static web output** — Generate fast, portable HTML with pagination, tags,
+  SEO metadata, syntax highlighting, and Mermaid diagrams
+- **Creator-owned workflow** — Store Markdown and artwork in Git, preview
+  locally, customize themes, and deploy to GitHub Pages
+
+Fossbook also works as a conventional static blog generator. Its comic
+extensions build on GitHub Flavored Markdown instead of replacing it.
 
 ## Quick Start
 
@@ -24,14 +42,14 @@ It was originally part of the [F/OSS Comics blog](https://fosscomics.com) and is
 npm install -g fossbook
 ```
 
-### Create a new site
+### Create a new publication
 
 ```bash
 mkdir my-blog && cd my-blog
 fossbook init
 ```
 
-This creates the following structure:
+This creates a publication project with the following structure:
 
 ```
 my-blog/
@@ -44,13 +62,14 @@ my-blog/
 └── package.json
 ```
 
-### Create a new post
+### Create a new work
 
 ```bash
 fossbook new "My First Post"
 ```
 
-This creates `content/posts/My First Post/index.md` with pre-filled front-matter and an `images/` directory.
+This creates `content/posts/My First Post/index.md` with pre-filled front-matter
+and an `images/` directory for comic panels, illustrations, and other artwork.
 
 To create the default article and one or more configured translations together:
 
@@ -127,10 +146,54 @@ module.exports = {
 
 ## Content Format
 
-Fossbook supports GitHub Flavored Markdown plus extensions for image sizing
-and alignment, captions, comic dialogue, aligned links, Mermaid diagrams, and
-syntax-highlighted code. See [Fossbook Markdown](fossbook_markdown.md) for
-syntax and examples.
+Fossbook source remains readable Markdown. A work combines YAML front-matter,
+prose, and standard GitHub Flavored Markdown with optional publishing
+extensions for visual storytelling.
+
+### Authoring comics
+
+Keep each work and its artwork together. Standard Markdown images become comic
+panels; image titles can control captions, size, and alignment. A blockquote
+placed immediately after an image becomes its dialogue transcript:
+
+```markdown
+![Two programmers talking](images/panel-01.png "size:70% A late-night debugging session")
+
+> "Do you think anyone will notice?" \
+> "They always notice."
+```
+
+Use `:::panel` containers to frame artwork, dialogue, and narration as one
+scene. Use `:::panels` to compose responsive multi-column sequences:
+
+```markdown
+::::panels columns="2" label="Two scenes"
+:::panel
+![The first scene](images/scene-01.png)
+
+> Dialogue for the first scene.
+
+Narration following the first scene.
+:::
+
+:::panel divider="true"
+![The second scene](images/scene-02.png)
+
+> Dialogue for the second scene.
+
+Narration following the dialogue.
+:::
+::::
+```
+
+The bundled theme adapts panel groups and sized images for mobile screens. It
+also adds a transcript visibility control when a work contains image-linked
+dialogue. Alternative text, captions, group labels, and transcript text remain
+part of the authored source rather than being baked into the page layout.
+
+See [Fossbook Markdown](fossbook_markdown.md) for the complete syntax for
+panels, responsive groups, image presentation, dialogue, aligned links,
+Mermaid diagrams, and syntax-highlighted code.
 
 ### Post front-matter
 
@@ -397,12 +460,12 @@ Omit the `comments` block (or set it to `null`) to disable comments.
 
 ### Options
 
-| Field       | Required | Default          | Description                                                      |
-| ----------- | -------- | ---------------- | ---------------------------------------------------------------- |
-| `provider`  | yes      | —                | Must be `"utterances"`.                                          |
-| `repo`      | yes      | —                | `owner/repo` whose issues store the comments.                    |
+| Field       | Required | Default          | Description                                                                   |
+| ----------- | -------- | ---------------- | ----------------------------------------------------------------------------- |
+| `provider`  | yes      | —                | Must be `"utterances"`.                                                       |
+| `repo`      | yes      | —                | `owner/repo` whose issues store the comments.                                 |
 | `issueTerm` | no       | `"pathname"`     | Mapping between a page and its issue: `pathname`, `url`, `title`, `og:title`. |
-| `theme`     | no       | `"github-light"` | Any [utterances theme](https://utteranc.es/#configuration).      |
+| `theme`     | no       | `"github-light"` | Any [utterances theme](https://utteranc.es/#configuration).                   |
 
 ### Mapping notes
 
@@ -467,6 +530,7 @@ fossbook init --github
 ```
 
 This will:
+
 1. Scaffold the site project (config, content directories)
 2. Create a GitHub repository for your blog
 3. Generate `.github/workflows/deploy.yml` for automatic deployments

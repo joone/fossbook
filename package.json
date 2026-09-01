@@ -1,7 +1,7 @@
 {
   "name": "fossbook",
   "version": "0.2.11",
-  "description": "A lightweight static blog site generator for GitHub Pages",
+  "description": "A Markdown-based authoring and web-publishing tool for comics, illustrated stories, and articles",
   "main": "lib/index.js",
   "scripts": {
     "build": "node bin/fossbook.js build",
@@ -10,8 +10,10 @@
     "prettier": "prettier --write ."
   },
   "keywords": [
+    "comic-authoring",
+    "webcomics",
+    "publishing",
     "static-site-generator",
-    "blog",
     "github-pages",
     "markdown"
   ],
@@ -35,6 +37,7 @@
   },
   "files": [
     "bin/",
+    "docs/images/",
     "lib/",
     "themes/"
   ],
