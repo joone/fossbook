@@ -521,6 +521,10 @@
     color: grey;
   }
 
+  ul.posts .meta {
+    margin-left: 0.50rem;
+  }
+
   /* Posts */
   article .title {
     margin-bottom: 1em;

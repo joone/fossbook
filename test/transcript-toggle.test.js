@@ -97,6 +97,10 @@ describe("Comic transcript toggle", () => {
     assert.match(styles, /\.site-description \+ \.list-item h1\s*{\s*margin-top: 1rem;/);
   });
 
+  it("separates all-posts dates from comic titles", () => {
+    assert.match(styles, /ul\.posts \.meta\s*{\s*margin-left: 0\.75rem;/);
+  });
+
   it("spaces the home pagination separator", () => {
     assert.match(styles, /\.pagination-separator\s*{\s*color: grey;\s*margin: 0 0\.5rem;/);
   });

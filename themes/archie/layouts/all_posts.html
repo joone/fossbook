@@ -35,7 +35,7 @@
                   .map(
                     (post) => `<li class="post">
                     <a href="${page.config.basePath}${post.path}">${post.title}</a><span class="meta">
-                        ${new Date(post.date).toDateString()}</span>
+                      ${page.formatDate(new Date(post.date))}</span>
                     </li>`,
                   )
                   .join("")}

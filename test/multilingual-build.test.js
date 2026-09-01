@@ -227,12 +227,15 @@ describe("Multilingual site build", () => {
     assert.doesNotMatch(koreanHome, /English only/);
     assert.match(englishAllPosts, /href="\/all_posts\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
     assert.match(englishAllPosts, /<h1 class="page-title">All posts<\/h1>/);
+    assert.match(englishAllPosts, /Aug 23, 2026/);
     assert.match(englishAllPosts, /href="\/ko\/all_posts\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
     assert.match(englishAllPosts, /hreflang="ko" href="https:\/\/example\.com\/ko\/all_posts\/"/);
     assert.match(koreanAllPosts, /href="\/all_posts\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
     assert.match(koreanAllPosts, /href="\/ko\/all_posts\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
     assert.match(koreanAllPosts, /<title>나의 블로그: 모든 글<\/title>/);
     assert.match(koreanAllPosts, /<h1 class="page-title">모든 글<\/h1>/);
+    assert.match(koreanAllPosts, /2026년 8월 23일/);
+    assert.doesNotMatch(koreanAllPosts, /Sun Aug 23 2026|Aug 23, 2026/);
     assert.match(koreanAllPosts, /href="\/ko\/">처음<\/a>/);
     assert.match(koreanAllPosts, /href="\/ko\/about">이곳은<\/a>/);
     assert.match(koreanAllPosts, /href="\/ko\/tags">태그<\/a>/);
