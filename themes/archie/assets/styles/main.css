@@ -461,6 +461,13 @@
     margin-top: 0.75rem;
   }
 
+  ul.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 0;
+  }
+
   /* navigation */
   h1.assistive-text {
     display: none;
@@ -552,6 +559,9 @@
   .site-description {
   display: flex;
   justify-content: space-between;
+  }
+  .site-description + .list-item h1 {
+    margin-top: 1rem;
   }
   .post-tags ul.tags {
     display: flex;

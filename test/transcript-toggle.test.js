@@ -89,6 +89,14 @@ describe("Comic transcript toggle", () => {
     assert.match(styles, /\.readmore\s*{\s*display: inline-block;\s*margin-top: 0\.75rem;/);
   });
 
+  it("centers home pagination", () => {
+    assert.match(styles, /ul\.pagination\s*{\s*display: flex;\s*justify-content: center;\s*align-items: center;\s*padding-left: 0;/);
+  });
+
+  it("tightens the gap before the first home-page episode", () => {
+    assert.match(styles, /\.site-description \+ \.list-item h1\s*{\s*margin-top: 1rem;/);
+  });
+
   it("spaces the home pagination separator", () => {
     assert.match(styles, /\.pagination-separator\s*{\s*color: grey;\s*margin: 0 0\.5rem;/);
   });
