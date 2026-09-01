@@ -1,6 +1,6 @@
 {
   "name": "fossbook",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "A Markdown-based authoring and web-publishing tool for comics, illustrated stories, and articles",
   "main": "lib/index.js",
   "scripts": {
