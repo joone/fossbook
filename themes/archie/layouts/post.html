@@ -57,12 +57,15 @@
                     <div class="meta">${page.config.postedOnLabel || "Posted on"} ${page.formatDate(new Date(page.date))}</div>
                     ${page.languageSwitcher()}
                   </div>
-                  ${page.body.includes('class="blockquote-container image-dialogue"') ? `<div class="transcript-control">
-                    <div class="transcript-toggle">
+                  <div class="post-controls">
+                    ${page.body.includes('class="blockquote-container image-dialogue"') ? `<div class="transcript-toggle">
                       <label for="comic-transcript-toggle">${page.config.transcriptLabel || "Display dialogue text"}</label>
                       <input id="comic-transcript-toggle" type="checkbox" role="switch" aria-controls="comic-transcript">
-                    </div>
-                  </div>` : ""}
+                    </div>` : ""}
+                    <button class="copy-link-button" type="button">
+                      <span aria-live="polite">${page.config.copyLinkLabel || "Copy link"}</span>
+                    </button>
+                  </div>
                   <section class="body" id="comic-transcript">
                     ${page.body}
                   </section>
@@ -101,6 +104,40 @@
             import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
             mermaid.initialize({ startOnLoad: true });
         </script>` : ""}
+        <script>
+          const copyLinkButton = document.querySelector(".copy-link-button");
+          const copyLinkLabel = copyLinkButton.querySelector("span");
+          const defaultCopyLinkLabel = copyLinkLabel.textContent;
+          let copyLinkResetTimer;
+          const copyEpisodeLink = async () => {
+            const canonicalLink = document.querySelector('link[rel="canonical"]');
+            const episodeUrl = canonicalLink ? canonicalLink.href : window.location.href;
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(episodeUrl);
+              } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = episodeUrl;
+                textArea.setAttribute("readonly", "");
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0";
+                document.body.appendChild(textArea);
+                textArea.select();
+                const copied = document.execCommand("copy");
+                textArea.remove();
+                if (!copied) throw new Error("Copy command failed");
+              }
+              copyLinkLabel.textContent = ${JSON.stringify(page.config.linkCopiedLabel || "Link copied")};
+            } catch (error) {
+              copyLinkLabel.textContent = ${JSON.stringify(page.config.copyLinkErrorLabel || "Could not copy link")};
+            }
+            clearTimeout(copyLinkResetTimer);
+            copyLinkResetTimer = setTimeout(() => {
+              copyLinkLabel.textContent = defaultCopyLinkLabel;
+            }, 2000);
+          };
+          copyLinkButton.addEventListener("click", copyEpisodeLink);
+        </script>
         ${page.body.includes('class="blockquote-container image-dialogue"') ? `<script>
           const transcriptToggle = document.querySelector("#comic-transcript-toggle");
           const transcriptStorageKey = "fossbook-comic-transcript";

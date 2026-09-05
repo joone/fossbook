@@ -114,7 +114,7 @@ describe("Multilingual site build", () => {
     );
     fs.writeFileSync(
       path.join(tempDir, "fossbook.config.ko.js"),
-      'module.exports = { blogName: "나의 블로그", authorName: "이수현", authorDescription: "한국어 작가 소개", blogDescription: "한국어 블로그", homeLabel: "처음", allPostsLabel: "모든 글", aboutLabel: "이곳은", tagsLabel: "태그", allTagsLabel: "모든 태그", postedOnLabel: "올린 날:", readMoreLabel: "더 읽기", previousPageLabel: "앞으로", nextPageLabel: "뒤로", transcriptLabel: "말글 보이기" };\n',
+      'module.exports = { blogName: "나의 블로그", authorName: "이수현", authorDescription: "한국어 작가 소개", blogDescription: "한국어 블로그", homeLabel: "처음", allPostsLabel: "모든 글", aboutLabel: "이곳은", tagsLabel: "태그", allTagsLabel: "모든 태그", postedOnLabel: "올린 날:", readMoreLabel: "더 읽기", previousPageLabel: "앞으로", nextPageLabel: "뒤로", transcriptLabel: "말글 보이기", copyLinkLabel: "링크 복사", linkCopiedLabel: "링크를 복사했습니다", copyLinkErrorLabel: "링크를 복사하지 못했습니다" };\n',
     );
     config.languageConfigs = createLanguageConfigs(config, configPath);
 
@@ -177,6 +177,9 @@ describe("Multilingual site build", () => {
     assert.match(koreanPost, /<html lang="ko">/);
     assert.match(koreanPost, /한국어 제목/);
     assert.match(koreanPost, /<div class="meta">올린 날: 2026년 8월 23일<\/div>/);
+    assert.match(koreanPost, /<span aria-live="polite">링크 복사<\/span>/);
+    assert.match(koreanPost, /"링크를 복사했습니다"/);
+    assert.match(koreanPost, /"링크를 복사하지 못했습니다"/);
     assert.doesNotMatch(koreanPost, /Posted on/);
     assert.match(koreanPost, /class="language-switcher"/);
     assert.match(koreanPost, /href="\/ko\/">처음<\/a>/);

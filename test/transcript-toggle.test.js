@@ -25,6 +25,16 @@ describe("Comic transcript toggle", () => {
     assert.match(template, /localStorage\.setItem/);
   });
 
+  it("copies the canonical episode link with accessible feedback", () => {
+    assert.match(template, /class="copy-link-button" type="button"/);
+    assert.match(template, /<span aria-live="polite">\$\{page\.config\.copyLinkLabel \|\| "Copy link"\}<\/span>/);
+    assert.match(template, /document\.querySelector\('link\[rel="canonical"\]'\)/);
+    assert.match(template, /navigator\.clipboard\.writeText\(episodeUrl\)/);
+    assert.match(template, /document\.execCommand\("copy"\)/);
+    assert.match(template, /page\.config\.linkCopiedLabel \|\| "Link copied"/);
+    assert.match(template, /page\.config\.copyLinkErrorLabel \|\| "Could not copy link"/);
+  });
+
   it("defaults transcripts off visually without hiding them from screen readers", () => {
     assert.match(template, /document\.documentElement\.classList\.add\("transcripts-hidden"\)/);
     assert.match(template, /localStorage\.getItem\("fossbook-comic-transcript"\) === "visible"/);
@@ -56,6 +66,7 @@ describe("Comic transcript toggle", () => {
   });
 
   it("keeps transcripts visible when printing", () => {
+    assert.match(styles, /@media print[\s\S]*\.post-controls\s*{\s*display: none;/);
     assert.match(styles, /@media print[\s\S]*\.transcripts-hidden \.image-dialogue\s*{\s*display: flex;[\s\S]*?position: static !important;/);
   });
 

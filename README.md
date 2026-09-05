@@ -300,6 +300,9 @@ module.exports = {
   previousPageLabel: "앞으로",
   nextPageLabel: "뒤로",
   transcriptLabel: "말글 보이기",
+  copyLinkLabel: "링크 복사",
+  linkCopiedLabel: "링크를 복사했습니다",
+  copyLinkErrorLabel: "링크를 복사하지 못했습니다",
 };
 ```
 
