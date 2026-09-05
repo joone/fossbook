@@ -124,7 +124,16 @@
   }
 
   .transcripts-hidden .image-dialogue {
-    display: none;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute !important;
+    white-space: nowrap;
+    width: 1px;
   }
 
 
@@ -158,6 +167,14 @@
 
     .transcripts-hidden .image-dialogue {
       display: flex;
+      clip: auto;
+      clip-path: none;
+      height: auto;
+      margin: 0 auto;
+      overflow: visible;
+      position: static !important;
+      white-space: normal;
+      width: var(--dialogue-width, 100%);
     }
   }
   

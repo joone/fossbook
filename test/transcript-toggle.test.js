@@ -25,6 +25,14 @@ describe("Comic transcript toggle", () => {
     assert.match(template, /localStorage\.setItem/);
   });
 
+  it("defaults transcripts off visually without hiding them from screen readers", () => {
+    assert.match(template, /document\.documentElement\.classList\.add\("transcripts-hidden"\)/);
+    assert.match(template, /localStorage\.getItem\("fossbook-comic-transcript"\) === "visible"/);
+    assert.doesNotMatch(template, /aria-controls="comic-transcript" checked/);
+    assert.doesNotMatch(styles, /\.transcripts-hidden \.image-dialogue\s*{\s*display: none;/);
+    assert.match(styles, /\.transcripts-hidden \.image-dialogue\s*{[\s\S]*?clip-path: inset\(50%\);[\s\S]*?position: absolute !important;/);
+  });
+
   it("versions local stylesheets in every theme layout", () => {
     const layoutsDir = path.join(__dirname, "../themes/archie/layouts");
     const layoutFiles = [
@@ -48,7 +56,7 @@ describe("Comic transcript toggle", () => {
   });
 
   it("keeps transcripts visible when printing", () => {
-    assert.match(styles, /@media print[\s\S]*\.transcripts-hidden \.image-dialogue\s*{\s*display: flex;/);
+    assert.match(styles, /@media print[\s\S]*\.transcripts-hidden \.image-dialogue\s*{\s*display: flex;[\s\S]*?position: static !important;/);
   });
 
   it("uses Korean fonts for body text and dialogue", () => {
@@ -98,7 +106,7 @@ describe("Comic transcript toggle", () => {
   });
 
   it("separates all-posts dates from comic titles", () => {
-    assert.match(styles, /ul\.posts \.meta\s*{\s*margin-left: 0\.75rem;/);
+    assert.match(styles, /ul\.posts \.meta\s*{\s*margin-left: 0\.50rem;/);
   });
 
   it("spaces the home pagination separator", () => {

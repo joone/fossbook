@@ -29,9 +29,10 @@
 
         ${page.twitterCard("summary")}
         ${page.body.includes('class="blockquote-container image-dialogue"') ? `<script>
+          document.documentElement.classList.add("transcripts-hidden");
           try {
-            if (localStorage.getItem("fossbook-comic-transcript") === "hidden") {
-              document.documentElement.classList.add("transcripts-hidden");
+            if (localStorage.getItem("fossbook-comic-transcript") === "visible") {
+              document.documentElement.classList.remove("transcripts-hidden");
             }
           } catch (error) {}
         </script>` : ""}
@@ -59,7 +60,7 @@
                   ${page.body.includes('class="blockquote-container image-dialogue"') ? `<div class="transcript-control">
                     <div class="transcript-toggle">
                       <label for="comic-transcript-toggle">${page.config.transcriptLabel || "Display dialogue text"}</label>
-                      <input id="comic-transcript-toggle" type="checkbox" role="switch" aria-controls="comic-transcript" checked>
+                      <input id="comic-transcript-toggle" type="checkbox" role="switch" aria-controls="comic-transcript">
                     </div>
                   </div>` : ""}
                   <section class="body" id="comic-transcript">
