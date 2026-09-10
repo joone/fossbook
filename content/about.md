@@ -12,11 +12,11 @@ publication, use artwork that you created or are licensed to publish.
 
 ## Try Fossbook
 
-1. Install Fossbook with `npm install -g fossbook`.
-2. Create a publication with `fossbook init`.
+1. Create a publication with `npx fossbook init`.
+2. Run `npm install` in the new publication.
 3. Write a post in `content/posts/`, keeping its artwork in that post's `images/`
    directory.
-4. Run `fossbook serve` to preview it, then `fossbook build` to generate a static
+4. Run `npm run start` to preview it, then `npm run build` to generate a static
    site.
 
 Read the [source Markdown for this demo](https://github.com/joone/fossbook/tree/main/content)
