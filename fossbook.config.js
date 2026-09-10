@@ -3,7 +3,8 @@ module.exports = {
   authorName: "Fossbook",
   authorDescription: "A Markdown-first publishing tool for comic creators.",
   authorWebsite: "https://github.com/joone/fossbook",
-  blogDescription: "A comic tour of Fossbook: author, preview, and publish illustrated stories with Markdown.",
+  blogDescription:
+    "A comic tour of Fossbook: author, preview, and publish illustrated stories with Markdown.",
   blogsite: "https://joone.github.io/fossbook",
   githubRepository: "https://github.com/joone/fossbook",
   image: "https://joone.github.io/fossbook/images/fossbook-comic-authoring.png",
