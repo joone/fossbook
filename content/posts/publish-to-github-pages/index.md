@@ -10,7 +10,7 @@ When the comic is ready, Fossbook turns its Markdown, artwork, theme assets, and
 metadata into a static site.
 
 :::panel divider="true" rounded="true"
-![A cartoonist assembles colorful blocks into a larger structure.](/fossbook/images/fossbook-comic-authoring.png "size:70% Build once, then publish the generated static files.")
+![A cartoonist assembles colorful blocks into a larger structure.](/images/fossbook-comic-authoring.png "size:70% Build once, then publish the generated static files.")
 
 > “Where does the finished comic go?” \
 > “Anywhere static files can be hosted.”

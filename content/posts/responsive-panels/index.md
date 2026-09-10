@@ -13,13 +13,13 @@ bundled Archie theme stacks the panels on narrow screens.
 :::panel rounded="true"
 **Desktop:** related moments can sit side by side.
 
-![A cartoonist assembles colorful blocks into a larger structure.](images/fossbook-comic-authoring.png "A panel can hold art and narration.")
+![A cartoonist assembles colorful blocks into a larger structure.](/images/fossbook-comic-authoring.png "A panel can hold art and narration.")
 :::
 
 :::panel divider="true" rounded="true"
 **Mobile:** the same source becomes a focused vertical reading flow.
 
-![A cartoonist assembles colorful blocks into a larger structure.](images/fossbook-comic-authoring.png "The layout remains readable on small screens.")
+![A cartoonist assembles colorful blocks into a larger structure.](/images/fossbook-comic-authoring.png "The layout remains readable on small screens.")
 
 > “One source, every screen.”
 :::
