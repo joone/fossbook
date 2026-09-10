@@ -52,11 +52,27 @@ describe("Markdown rendering", () => {
   });
 
   it("prefixes root-relative image paths with the configured base path", () => {
-    const html = marked.parse("![Fossbook](/images/fossbook.png)", {
-      basePath: "/fossbook/",
-    });
+    const html = marked.parse(
+      `![Root](/images/fossbook.png)
+![Prefixed](/fossbook/images/fossbook.png)
+![Protocol-relative](//cdn.example.com/fossbook.png)
+![Absolute](https://example.com/fossbook.png)
+![Relative](images/fossbook.png)`,
+      { basePath: "/fossbook/" },
+    );
 
     assert.match(html, /src="\/fossbook\/images\/fossbook\.png"/);
+    assert.doesNotMatch(
+      html,
+      /src="\/fossbook\/fossbook\/images\/fossbook\.png"/,
+    );
+    assert.match(html, /src="\/\/cdn\.example\.com\/fossbook\.png"/);
+    assert.match(html, /src="https:\/\/example\.com\/fossbook\.png"/);
+    assert.match(html, /src="images\/fossbook\.png"/);
+    assert.match(
+      marked.parse("![Root](/images/fossbook.png)"),
+      /src="\/images\/fossbook\.png"/,
+    );
   });
 
   it("renders a responsive group of captioned panels", () => {
