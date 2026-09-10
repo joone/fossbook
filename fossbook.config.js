@@ -9,6 +9,12 @@ module.exports = {
   githubRepository: "https://github.com/joone/fossbook",
   image: "https://joone.github.io/fossbook/images/fossbook-comic-authoring.png",
   theme: "archie",
+  defaultLanguage: "en",
+  defaultLanguageInSubdir: false,
+  languages: {
+    en: { languageName: "English", locale: "en-US" },
+    ko: { languageName: "한국어", locale: "ko-KR" },
+  },
   basePath: "/fossbook/",
   postsPath: "posts",
   content: "./content",
