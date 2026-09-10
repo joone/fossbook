@@ -4,12 +4,12 @@ const os = require("os");
 const path = require("path");
 const Posts = require("../lib/posts");
 
-function writePost(postsDir, slug, fileName, title) {
+function writePost(postsDir, slug, fileName, title, draft = false) {
   const postDir = path.join(postsDir, slug);
   fs.mkdirSync(postDir, { recursive: true });
   fs.writeFileSync(
     path.join(postDir, fileName),
-    `---\ntitle: ${title}\ndate: 2026-08-23\ndescription: ${title}\n---\n\n${title}\n`,
+    `---\ntitle: ${title}\ndate: 2026-08-23\ndescription: ${title}\ndraft: ${draft}\n---\n\n${title}\n`,
   );
 }
 
@@ -62,5 +62,27 @@ describe("Multilingual post discovery", () => {
     assert.strictEqual(posts[0].slug, "translated");
     assert.strictEqual(posts[0].path, "posts/translated");
     assert.strictEqual(posts[0].url, "https://example.com/ko/posts/translated/");
+  });
+
+  it("excludes draft posts by default", () => {
+    writePost(postsDir, "draft-post", "index.md", "Draft post", true);
+
+    const posts = new Posts(createConfig(postsDir, "en")).createPostObjects();
+
+    assert.deepStrictEqual(
+      posts.map((post) => post.title).sort(),
+      ["English only", "English title"],
+    );
+  });
+
+  it("includes draft posts when draft previews are enabled", () => {
+    writePost(postsDir, "draft-post", "index.md", "Draft post", true);
+    const config = createConfig(postsDir, "en");
+    config.includeDrafts = true;
+
+    const posts = new Posts(config).createPostObjects();
+
+    assert.strictEqual(posts.length, 3);
+    assert.strictEqual(posts.some((post) => post.title === "Draft post"), true);
   });
 });

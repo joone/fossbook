@@ -5,12 +5,12 @@ const path = require("path");
 const { build, createAboutTranslations } = require("../lib");
 const { createLanguageConfigs } = require("../lib/mod/config");
 
-function writePost(postsDir, slug, fileName, title) {
+function writePost(postsDir, slug, fileName, title, draft = false) {
   const postDir = path.join(postsDir, slug);
   fs.mkdirSync(path.join(postDir, "images"), { recursive: true });
   fs.writeFileSync(
     path.join(postDir, fileName),
-    `---\ntitle: ${title}\ndate: 2026-08-23\ndescription: ${title}\nimage: panel.png\ntags: test\n---\n\n![](images/panel.png)\n`,
+    `---\ntitle: ${title}\ndate: 2026-08-23\ndescription: ${title}\nimage: panel.png\ntags: test\ndraft: ${draft}\n---\n\n![](images/panel.png)\n`,
   );
   fs.writeFileSync(path.join(postDir, "images", "panel.png"), "image");
 }
@@ -72,6 +72,8 @@ describe("Multilingual site build", () => {
     writePost(postsDir, "translated", "index.md", "English title");
     writePost(postsDir, "translated", "index.ko.md", "한국어 제목");
     writePost(postsDir, "english-only", "index.md", "English only");
+    writePost(postsDir, "draft-post", "index.md", "Draft post", true);
+    writePost(postsDir, "draft-post", "index.ko.md", "초안", true);
     writePage(contentDir, "about.md", "About this site");
     writePage(contentDir, "about.ko.md", "이곳은");
 
@@ -262,6 +264,23 @@ describe("Multilingual site build", () => {
     );
     assert.strictEqual(
       fs.existsSync(path.join(outputDir, "ko", "posts", "translated", "images", "panel.png")),
+      true,
+    );
+    assert.strictEqual(
+      fs.existsSync(path.join(outputDir, "posts", "draft-post", "index.html")),
+      false,
+    );
+    assert.doesNotMatch(englishHome, /Draft post/);
+
+    config.includeDrafts = true;
+    build(config);
+
+    assert.strictEqual(
+      fs.existsSync(path.join(outputDir, "posts", "draft-post", "index.html")),
+      true,
+    );
+    assert.strictEqual(
+      fs.existsSync(path.join(outputDir, "ko", "posts", "draft-post", "index.html")),
       true,
     );
   });

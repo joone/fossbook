@@ -85,10 +85,17 @@ This also creates `index.ko.md` and `index.ja.md` in the same post directory. Ru
 fossbook build
 ```
 
+Posts with `draft: true` in their front matter are excluded from generated
+post pages, home pages, archives, and tags. To include them in a local build:
+
+```bash
+fossbook build --include-drafts
+```
+
 ### Preview locally
 
 ```bash
-fossbook serve
+fossbook serve --include-drafts
 ```
 
 Open http://localhost:3000 to view your site.
@@ -204,10 +211,15 @@ date: 2026-02-17
 description: "A brief summary of the post"
 image: "feature.png"
 tags: "JavaScript, Node.js, Static Site"
+draft: false
 ---
 
 Your Markdown content here...
 ```
+
+Set `draft: true` while a post is in progress. Normal builds and deployments
+exclude it. Use `fossbook serve --include-drafts` to preview drafts locally,
+then remove the field or set it to `false` before publishing.
 
 ### Directory structure
 

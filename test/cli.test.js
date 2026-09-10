@@ -10,4 +10,12 @@ describe("fossbook CLI", () => {
 
     assert.strictEqual(output.trim(), `fossbook v${require("../package.json").version}`);
   });
+
+  it("documents the local draft preview option", () => {
+    const output = execFileSync(process.execPath, [path.join(__dirname, "../bin/fossbook.js"), "--help"], {
+      encoding: "utf8",
+    });
+
+    assert.match(output, /--include-drafts \(build, serve\) Include posts with draft: true/);
+  });
 });

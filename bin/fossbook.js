@@ -24,6 +24,7 @@ Options:
   --clean        Remove output directory before build (default: true)
   --github       (init) Also create a GitHub repo and push
   --lang         (new) Comma-separated translation languages, e.g. ko,ja
+  --include-drafts (build, serve) Include posts with draft: true
   -m, --message  (deploy) Custom commit message
   --no-wait      (deploy) Push without waiting for CI status
   --draft        (deploy) Commit locally without pushing
@@ -64,6 +65,7 @@ switch (command) {
     const config = loadConfig(configPath);
     const outputOverride = getOption("-o", "--output");
     if (outputOverride) config.dev.outdir = outputOverride;
+    config.includeDrafts = hasFlag("--include-drafts");
 
     const { build } = require("../lib/index");
     build(config);
@@ -74,6 +76,7 @@ switch (command) {
     const config = loadConfig(configPath);
     const outputOverride = getOption("-o", "--output");
     if (outputOverride) config.dev.outdir = outputOverride;
+    config.includeDrafts = hasFlag("--include-drafts");
     const port = getOption("-p", "--port") || 3000;
 
     const { build } = require("../lib/index");
