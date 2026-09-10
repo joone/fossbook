@@ -3,18 +3,39 @@ const marked = require("../lib/mod/marked");
 
 describe("Markdown rendering", () => {
   it("renders bare Wikipedia URLs as localized citations", () => {
-    const korean = marked.parse("- [1] https://ko.wikipedia.org/wiki/튜링_기계");
-    const english = marked.parse("- [1] https://en.wikipedia.org/wiki/Turing_machine");
-    const autolink = marked.parse("- [1] <https://ko.wikipedia.org/wiki/앨런_튜링>");
-    const punctuated = marked.parse("See https://en.wikipedia.org/wiki/History_of_computing.");
-    const references = marked.parse(`- [1] https://ko.wikipedia.org/wiki/튜링_기계
+    const korean = marked.parse(
+      "- [1] https://ko.wikipedia.org/wiki/튜링_기계",
+    );
+    const english = marked.parse(
+      "- [1] https://en.wikipedia.org/wiki/Turing_machine",
+    );
+    const autolink = marked.parse(
+      "- [1] <https://ko.wikipedia.org/wiki/앨런_튜링>",
+    );
+    const punctuated = marked.parse(
+      "See https://en.wikipedia.org/wiki/History_of_computing.",
+    );
+    const references =
+      marked.parse(`- [1] https://ko.wikipedia.org/wiki/튜링_기계
 - [2] https://ko.wikipedia.org/wiki/앨런_튜링
 - [3] https://ko.wikipedia.org/wiki/컴퓨터의_역사`);
 
-    assert.match(korean, /<a href="https:\/\/ko\.wikipedia\.org\/wiki\/튜링_기계">튜링 기계, 위키백과<\/a>/);
-    assert.match(english, /<a href="https:\/\/en\.wikipedia\.org\/wiki\/Turing_machine">Turing machine, Wikipedia<\/a>/);
-    assert.match(autolink, /<a href="https:\/\/ko\.wikipedia\.org\/wiki\/앨런_튜링">앨런 튜링, 위키백과<\/a>/);
-    assert.match(punctuated, /<a href="https:\/\/en\.wikipedia\.org\/wiki\/History_of_computing">History of computing, Wikipedia<\/a>\.<\/p>/);
+    assert.match(
+      korean,
+      /<a href="https:\/\/ko\.wikipedia\.org\/wiki\/튜링_기계">튜링 기계, 위키백과<\/a>/,
+    );
+    assert.match(
+      english,
+      /<a href="https:\/\/en\.wikipedia\.org\/wiki\/Turing_machine">Turing machine, Wikipedia<\/a>/,
+    );
+    assert.match(
+      autolink,
+      /<a href="https:\/\/ko\.wikipedia\.org\/wiki\/앨런_튜링">앨런 튜링, 위키백과<\/a>/,
+    );
+    assert.match(
+      punctuated,
+      /<a href="https:\/\/en\.wikipedia\.org\/wiki\/History_of_computing">History of computing, Wikipedia<\/a>\.<\/p>/,
+    );
     assert.strictEqual((references.match(/<li>/g) || []).length, 3);
     assert.match(references, /\[1\] <a[^>]+>튜링 기계, 위키백과<\/a>/);
     assert.match(references, /\[2\] <a[^>]+>앨런 튜링, 위키백과<\/a>/);
@@ -22,10 +43,36 @@ describe("Markdown rendering", () => {
   });
 
   it("preserves explicitly labeled Wikipedia links", () => {
-    const html = marked.parse("[튜링의 계산 모형](https://ko.wikipedia.org/wiki/튜링_기계)");
+    const html = marked.parse(
+      "[튜링의 계산 모형](https://ko.wikipedia.org/wiki/튜링_기계)",
+    );
 
     assert.match(html, />튜링의 계산 모형<\/a>/);
     assert.doesNotMatch(html, /위키백과/);
+  });
+
+  it("prefixes root-relative image paths with the configured base path", () => {
+    const html = marked.parse(
+      `![Root](/images/fossbook.png)
+![Prefixed](/fossbook/images/fossbook.png)
+![Protocol-relative](//cdn.example.com/fossbook.png)
+![Absolute](https://example.com/fossbook.png)
+![Relative](images/fossbook.png)`,
+      { basePath: "/fossbook/" },
+    );
+
+    assert.match(html, /src="\/fossbook\/images\/fossbook\.png"/);
+    assert.doesNotMatch(
+      html,
+      /src="\/fossbook\/fossbook\/images\/fossbook\.png"/,
+    );
+    assert.match(html, /src="\/\/cdn\.example\.com\/fossbook\.png"/);
+    assert.match(html, /src="https:\/\/example\.com\/fossbook\.png"/);
+    assert.match(html, /src="images\/fossbook\.png"/);
+    assert.match(
+      marked.parse("![Root](/images/fossbook.png)"),
+      /src="\/images\/fossbook\.png"/,
+    );
   });
 
   it("renders a responsive group of captioned panels", () => {
@@ -40,11 +87,15 @@ describe("Markdown rendering", () => {
     );
     assert.match(html, /<figcaption>Alan Turing, 1912-1954<\/figcaption>/);
     assert.match(html, /<figcaption>John von Neumann, 1903-1957<\/figcaption>/);
-    assert.strictEqual((html.match(/class="image-container"/g) || []).length, 2);
+    assert.strictEqual(
+      (html.match(/class="image-container"/g) || []).length,
+      2,
+    );
   });
 
   it("nests comic panels inside a longer-fenced panel grid", () => {
-    const html = marked.parse(`::::panels columns="2" style="gap: 1rem;" label="Two scenes"
+    const html =
+      marked.parse(`::::panels columns="2" style="gap: 1rem;" label="Two scenes"
 :::panel style="border-width: 2px;"
 First scene.
 
@@ -78,11 +129,17 @@ Second scene.
       /Unsupported panels attribute: width/,
     );
     assert.throws(
-      () => marked.parse(':::panels columns="2" columns="3"\n![Panel](panel.png)\n:::'),
+      () =>
+        marked.parse(
+          ':::panels columns="2" columns="3"\n![Panel](panel.png)\n:::',
+        ),
       /Duplicate panels attribute: columns/,
     );
     assert.throws(
-      () => marked.parse(':::panels style="box-shadow: none;"\n![Panel](panel.png)\n:::'),
+      () =>
+        marked.parse(
+          ':::panels style="box-shadow: none;"\n![Panel](panel.png)\n:::',
+        ),
       /Unsupported panel group style property: box-shadow/,
     );
     assert.throws(
@@ -96,7 +153,8 @@ Second scene.
   });
 
   it("groups comic artwork, dialogue, and prose in one semantic panel", () => {
-    const html = marked.parse(`:::panel label="Turing imagines a universal machine" style="border-width: 3px;"
+    const html =
+      marked.parse(`:::panel label="Turing imagines a universal machine" style="border-width: 3px;"
 ![Alan Turing walking](images/turing.png)
 > "I have an idea."
 
@@ -113,12 +171,19 @@ Turing described an abstract machine that reads symbols from a tape.
   });
 
   it("makes the dialogue divider opt-in for comic panels", () => {
-    const withoutDivider = marked.parse(':::panel\n![Scene](scene.png)\n> Dialogue\n:::');
-    const withDivider = marked.parse(':::panel divider="true"\n![Scene](scene.png)\n> Dialogue\n:::');
+    const withoutDivider = marked.parse(
+      ":::panel\n![Scene](scene.png)\n> Dialogue\n:::",
+    );
+    const withDivider = marked.parse(
+      ':::panel divider="true"\n![Scene](scene.png)\n> Dialogue\n:::',
+    );
 
     assert.match(withoutDivider, /<section class="comic-panel">/);
     assert.doesNotMatch(withoutDivider, /comic-panel-divider/);
-    assert.match(withDivider, /<section class="comic-panel comic-panel-divider">/);
+    assert.match(
+      withDivider,
+      /<section class="comic-panel comic-panel-divider">/,
+    );
     assert.throws(
       () => marked.parse(':::panel divider="false"\nText\n:::'),
       /Panel divider must be "true"/,
@@ -149,14 +214,8 @@ Turing described an abstract machine that reads symbols from a tape.
   it("marks dialogue adjacent to a sized image for width synchronization", () => {
     const html = marked.parse('![](images/panel.png "size:60%")\n> Dialogue');
 
-    assert.match(
-      html,
-      /class="blockquote-container image-dialogue"/,
-    );
-    assert.match(
-      html,
-      /class="image-container" style="text-align: center;"/,
-    );
+    assert.match(html, /class="blockquote-container image-dialogue"/);
+    assert.match(html, /class="image-container" style="text-align: center;"/);
     assert.match(html, /<img[^>]+class="sized-image" style="width: 60%;">/);
   });
 
@@ -167,14 +226,22 @@ Turing described an abstract machine that reads symbols from a tape.
   });
 
   it("renders easy-to-type straight quotes as Korean dialogue quotes", () => {
-    const korean = marked.parse('![](images/panel.png)\n> "첫 번째" \\\n> "두 번째"', { language: "ko" });
-    const english = marked.parse('![](images/panel.png)\n> "Dialogue"', { language: "en" });
+    const korean = marked.parse(
+      '![](images/panel.png)\n> "첫 번째" \\\n> "두 번째"',
+      { language: "ko" },
+    );
+    const english = marked.parse('![](images/panel.png)\n> "Dialogue"', {
+      language: "en",
+    });
     const prose = marked.parse('Ordinary "Korean" prose', { language: "ko" });
     const unmatched = marked.parse('> "미완성', { language: "ko" });
 
     assert.strictEqual((korean.match(/dialogue-quote-open/g) || []).length, 2);
     assert.strictEqual((korean.match(/dialogue-quote-close/g) || []).length, 2);
-    assert.match(korean, /<span class="dialogue-quote dialogue-quote-open">“<\/span>첫 번째<span class="dialogue-quote dialogue-quote-close">”<\/span>/);
+    assert.match(
+      korean,
+      /<span class="dialogue-quote dialogue-quote-open">“<\/span>첫 번째<span class="dialogue-quote dialogue-quote-close">”<\/span>/,
+    );
     assert.match(english, /&quot;Dialogue&quot;/);
     assert.match(prose, /&quot;Korean&quot;/);
     assert.match(unmatched, /&quot;미완성/);

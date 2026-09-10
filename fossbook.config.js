@@ -1,0 +1,19 @@
+module.exports = {
+  blogName: "Fossbook Comics",
+  authorName: "Fossbook",
+  authorDescription: "A Markdown-first publishing tool for comic creators.",
+  authorWebsite: "https://github.com/joone/fossbook",
+  blogDescription:
+    "A comic tour of Fossbook: author, preview, and publish illustrated stories with Markdown.",
+  blogsite: "https://joone.github.io/fossbook",
+  githubRepository: "https://github.com/joone/fossbook",
+  image: "https://joone.github.io/fossbook/images/fossbook-comic-authoring.png",
+  theme: "archie",
+  basePath: "/fossbook/",
+  postsPath: "posts",
+  content: "./content",
+  postsDir: "./content/posts",
+  outputDir: "./public",
+  staticDir: "./static",
+  themesDir: "./themes",
+};
