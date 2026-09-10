@@ -9,7 +9,7 @@ draft: false
 Fossbook keeps the script and artwork references together in a readable Markdown
 file. Start with a normal image, then place its dialogue immediately beneath it.
 
-![A cartoonist assembles colorful blocks into a larger structure.](images/fossbook-comic-authoring.png "size:75% A Fossbook story starts as portable source files.")
+![A cartoonist assembles colorful blocks into a larger structure.](../../../images/fossbook-comic-authoring.png "size:75% A Fossbook story starts as portable source files.")
 
 > “The story is just Markdown?” \
 > “Markdown, artwork, and the details readers need.”
@@ -25,7 +25,7 @@ Wrap prose and artwork in a `panel` when they belong together:
 :::panel rounded="true"
 Every scene can combine narration, art, captions, and accessible dialogue.
 
-![A cartoonist assembles colorful blocks into a larger structure.](images/fossbook-comic-authoring.png "size:60% A panel groups the ingredients of a scene.")
+![A cartoonist assembles colorful blocks into a larger structure.](../../../images/fossbook-comic-authoring.png "size:60% A panel groups the ingredients of a scene.")
 :::
 
 Next: [arrange a responsive comic page](../responsive-panels/ "align:right").
