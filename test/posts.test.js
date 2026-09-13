@@ -85,4 +85,17 @@ describe("Multilingual post discovery", () => {
     assert.strictEqual(posts.length, 3);
     assert.strictEqual(posts.some((post) => post.title === "Draft post"), true);
   });
+
+  it("reads a per-image publication width from image title metadata", () => {
+    const postPath = path.join(postsDir, "translated", "index.md");
+    fs.appendFileSync(
+      postPath,
+      '\n![Detailed diagram](images/diagram.png "publish-width:1200 Diagram")\n',
+    );
+
+    const posts = new Posts(createConfig(postsDir, "en")).createPostObjects();
+    const post = posts.find((candidate) => candidate.slug === "translated");
+
+    assert.strictEqual(post.imageWidthOverrides.get("diagram.png"), 1200);
+  });
 });

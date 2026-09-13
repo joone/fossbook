@@ -1,6 +1,7 @@
 node_modules
 dist
 public/
+.fossbook-cache/
 docs/*
 !docs/images/
 .env

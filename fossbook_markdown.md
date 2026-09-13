@@ -37,6 +37,19 @@ will not grow beyond its content area. The bundled Archie theme uses the
 requested width on larger screens and expands sized images to `100%` on
 screens narrower than 600 pixels.
 
+### Publication width
+
+Add `publish-width:1200` to retain more detail in the generated copy of an
+image with small lettering or a detailed diagram:
+
+```markdown
+![A detailed diagram](images/diagram.png "publish-width:1200")
+```
+
+This changes only the generated publication copy. Fossbook preserves the
+source image, its aspect ratio, and never upscales or crops it. The configured
+`imageMaxWidthOverride` limits the requested width.
+
 ### Alignment
 
 Add `align:left`, `align:center`, or `align:right` to the image title:

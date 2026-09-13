@@ -60,74 +60,85 @@ if (hasFlag("-h", "--help") || !command) {
 
 const configPath = getOption("-c", "--config");
 
-switch (command) {
-  case "build": {
-    const config = loadConfig(configPath);
-    const outputOverride = getOption("-o", "--output");
-    if (outputOverride) config.dev.outdir = outputOverride;
-    config.includeDrafts = hasFlag("--include-drafts");
+async function run() {
+  switch (command) {
+    case "build": {
+      const config = loadConfig(configPath);
+      const outputOverride = getOption("-o", "--output");
+      if (outputOverride) config.dev.outdir = outputOverride;
+      config.includeDrafts = hasFlag("--include-drafts");
 
-    const { build } = require("../lib/index");
-    build(config);
-    break;
-  }
-
-  case "serve": {
-    const config = loadConfig(configPath);
-    const outputOverride = getOption("-o", "--output");
-    if (outputOverride) config.dev.outdir = outputOverride;
-    config.includeDrafts = hasFlag("--include-drafts");
-    const port = getOption("-p", "--port") || 3000;
-
-    const { build } = require("../lib/index");
-    build(config);
-
-    const { serve } = require("../lib/server");
-    serve(config, Number(port));
-    break;
-  }
-
-  case "new": {
-    const title = args[1];
-    if (!title) {
-      console.error('Error: Please provide a post title. Usage: fossbook new "My Post Title"');
-      process.exit(1);
+      const { build } = require("../lib/index");
+      await build(config);
+      break;
     }
-    if (hasFlag("--lang") && !getOption("--lang")) {
-      console.error("Error: Please provide at least one language after --lang");
-      process.exit(1);
+
+    case "serve": {
+      const config = loadConfig(configPath);
+      const outputOverride = getOption("-o", "--output");
+      if (outputOverride) config.dev.outdir = outputOverride;
+      config.includeDrafts = hasFlag("--include-drafts");
+      const port = getOption("-p", "--port") || 3000;
+
+      const { build } = require("../lib/index");
+      await build(config);
+
+      const { serve } = require("../lib/server");
+      serve(config, Number(port));
+      break;
     }
-    const config = loadConfig(configPath);
-    const { createPost } = require("../lib/new");
-    try {
-      createPost(config, title, getOption("--lang"));
-    } catch (error) {
-      console.error(`Error: ${error.message}`);
-      process.exit(1);
+
+    case "new": {
+      const title = args[1];
+      if (!title) {
+        console.error(
+          'Error: Please provide a post title. Usage: fossbook new "My Post Title"',
+        );
+        process.exit(1);
+      }
+      if (hasFlag("--lang") && !getOption("--lang")) {
+        console.error(
+          "Error: Please provide at least one language after --lang",
+        );
+        process.exit(1);
+      }
+      const config = loadConfig(configPath);
+      const { createPost } = require("../lib/new");
+      try {
+        createPost(config, title, getOption("--lang"));
+      } catch (error) {
+        console.error(`Error: ${error.message}`);
+        process.exit(1);
+      }
+      break;
     }
-    break;
-  }
 
-  case "init": {
-    const { initProject } = require("../lib/init");
-    const projectName = !args[1] || args[1].startsWith("--") ? null : args[1];
-    initProject({ github: hasFlag("--github"), name: projectName });
-    break;
-  }
+    case "init": {
+      const { initProject } = require("../lib/init");
+      const projectName = !args[1] || args[1].startsWith("--") ? null : args[1];
+      initProject({ github: hasFlag("--github"), name: projectName });
+      break;
+    }
 
-  case "deploy": {
-    const config = loadConfig(configPath);
-    const { deploy } = require("../lib/deploy");
-    deploy(config, {
-      message: getOption("-m", "--message"),
-      noWait: hasFlag("--no-wait"),
-      draft: hasFlag("--draft"),
-    });
-    break;
-  }
+    case "deploy": {
+      const config = loadConfig(configPath);
+      const { deploy } = require("../lib/deploy");
+      await deploy(config, {
+        message: getOption("-m", "--message"),
+        noWait: hasFlag("--no-wait"),
+        draft: hasFlag("--draft"),
+      });
+      break;
+    }
 
-  default:
-    console.error(`Unknown command: ${command}`);
-    printHelp();
-    process.exit(1);
+    default:
+      console.error(`Unknown command: ${command}`);
+      printHelp();
+      process.exit(1);
+  }
 }
+
+run().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

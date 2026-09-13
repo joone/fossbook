@@ -225,6 +225,15 @@ Turing described an abstract machine that reads symbols from a tape.
     assert.match(html, /class="blockquote-container image-dialogue"/);
   });
 
+  it("removes publication width metadata from the visible caption", () => {
+    const html = marked.parse(
+      '![](images/panel.png "publish-width:1200 Detailed diagram")',
+    );
+
+    assert.match(html, /<figcaption>Detailed diagram<\/figcaption>/);
+    assert.doesNotMatch(html, /publish-width/);
+  });
+
   it("renders easy-to-type straight quotes as Korean dialogue quotes", () => {
     const korean = marked.parse(
       '![](images/panel.png)\n> "첫 번째" \\\n> "두 번째"',
