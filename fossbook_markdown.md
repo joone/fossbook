@@ -50,6 +50,12 @@ This changes only the generated publication copy. Fossbook preserves the
 source image, its aspect ratio, and never upscales or crops it. The configured
 `imageMaxWidthOverride` limits the requested width.
 
+For PNG post images, Fossbook publishes lossless WebP candidates at 600, 800,
+and 1000 pixels when those widths do not exceed the source or publication
+limit. A `publish-width:1200` image also receives a 1200-pixel candidate.
+Browsers select an appropriate WebP while the generated PNG remains available
+as a fallback.
+
 ### Alignment
 
 Add `align:left`, `align:center`, or `align:right` to the image title:
@@ -77,6 +83,7 @@ image as comic dialogue:
 
 ```markdown
 ![Two characters talking](images/panel.png "size:60%")
+
 > First line of dialogue. \
 > Second line of dialogue.
 ```
@@ -119,6 +126,7 @@ dialogue and the content that follows:
 ```markdown
 :::panel divider="true"
 ![A description of the scene](images/panel.png)
+
 > Dialogue shown below the image.
 
 Narration following the dialogue.
@@ -143,7 +151,7 @@ collapses panel groups to one column on screens narrower than 600 pixels.
 To put mixed-content comic panels in the grid, use a four-colon fence around
 three-colon `panel` containers:
 
-`````markdown
+```markdown
 ::::panels columns="2" style="gap: 1rem;" label="Two scenes"
 :::panel
 First scene narration.
@@ -157,7 +165,7 @@ Second scene narration.
 ![Second scene](images/second.png)
 :::
 ::::
-`````
+```
 
 The longer outer fence prevents an inner `:::` from closing the `panels`
 container. Nested panels stretch to equal heights within each grid row.

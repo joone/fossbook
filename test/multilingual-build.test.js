@@ -12,7 +12,13 @@ function writePost(postsDir, slug, fileName, title, draft = false) {
     path.join(postDir, fileName),
     `---\ntitle: ${title}\ndate: 2026-08-23\ndescription: ${title}\nimage: panel.png\ntags: test\ndraft: ${draft}\n---\n\n![](images/panel.png)\n`,
   );
-  fs.writeFileSync(path.join(postDir, "images", "panel.png"), "image");
+  fs.writeFileSync(
+    path.join(postDir, "images", "panel.png"),
+    Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+      "base64",
+    ),
+  );
 }
 
 function writePage(contentDir, fileName, title) {
@@ -65,7 +71,8 @@ describe("Multilingual site build", () => {
     ]);
   });
 
-  it("generates separate static output for each configured language", async () => {
+  it("generates separate static output for each configured language", async function () {
+    this.timeout(10000);
     const contentDir = path.join(tempDir, "content");
     const postsDir = path.join(contentDir, "posts");
     const outputDir = path.join(tempDir, "public");
@@ -106,6 +113,7 @@ describe("Multilingual site build", () => {
         content: contentDir,
         about: path.join(contentDir, "about.md"),
         outdir: outputDir,
+        cacheDir: path.join(tempDir, ".fossbook-cache"),
         staticDir: path.join(tempDir, "static"),
       },
     };
@@ -121,6 +129,17 @@ describe("Multilingual site build", () => {
     config.languageConfigs = createLanguageConfigs(config, configPath);
 
     await build(config);
+    const translatedSource = path.join(postsDir, "translated", "index.md");
+    fs.appendFileSync(translatedSource, "\nUpdated prose only.\n");
+    await build(config);
+    const warmCacheStatus = JSON.parse(
+      fs.readFileSync(
+        path.join(tempDir, ".fossbook-cache", "image-cache-status.json"),
+        "utf8",
+      ),
+    );
+    assert.strictEqual(warmCacheStatus.writes, 0);
+    assert.strictEqual(warmCacheStatus.regeneratedImages, 0);
 
     const englishPost = fs.readFileSync(
       path.join(outputDir, "posts", "translated", "index.html"),
@@ -142,8 +161,14 @@ describe("Multilingual site build", () => {
       path.join(outputDir, "ko", "about", "index.html"),
       "utf8",
     );
-    const englishHome = fs.readFileSync(path.join(outputDir, "index.html"), "utf8");
-    const koreanHome = fs.readFileSync(path.join(outputDir, "ko", "index.html"), "utf8");
+    const englishHome = fs.readFileSync(
+      path.join(outputDir, "index.html"),
+      "utf8",
+    );
+    const koreanHome = fs.readFileSync(
+      path.join(outputDir, "ko", "index.html"),
+      "utf8",
+    );
     const englishAllPosts = fs.readFileSync(
       path.join(outputDir, "all_posts", "index.html"),
       "utf8",
@@ -167,18 +192,44 @@ describe("Multilingual site build", () => {
 
     assert.match(englishPost, /<html lang="en">/);
     assert.match(englishPost, /English title/);
-    assert.match(englishPost, /<div class="meta">Posted on Aug 23, 2026<\/div>/);
+    assert.match(englishPost, /Updated prose only/);
+    assert.match(englishPost, /<picture><source type="image\/webp"/);
+    assert.match(englishPost, /images\/panel\.webp 1w/);
+    assert.doesNotMatch(englishPost, /panel-(?:600|800|1000)\.webp/);
+    assert.match(englishPost, /<img src="images\/panel\.png"/);
+    assert.match(
+      englishPost,
+      /<div class="meta">Posted on Aug 23, 2026<\/div>/,
+    );
     assert.match(englishPost, /class="language-switcher"/);
-    assert.match(englishPost, /href="\/posts\/translated\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
-    assert.match(englishPost, /href="\/ko\/posts\/translated\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
-    assert.match(englishPost, /hreflang="en" href="https:\/\/example\.com\/posts\/translated\/"/);
-    assert.match(englishPost, /hreflang="ko" href="https:\/\/example\.com\/ko\/posts\/translated\/"/);
-    assert.match(englishPost, /hreflang="x-default" href="https:\/\/example\.com\/posts\/translated\/"/);
+    assert.match(
+      englishPost,
+      /href="\/posts\/translated\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/,
+    );
+    assert.match(
+      englishPost,
+      /href="\/ko\/posts\/translated\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/,
+    );
+    assert.match(
+      englishPost,
+      /hreflang="en" href="https:\/\/example\.com\/posts\/translated\/"/,
+    );
+    assert.match(
+      englishPost,
+      /hreflang="ko" href="https:\/\/example\.com\/ko\/posts\/translated\/"/,
+    );
+    assert.match(
+      englishPost,
+      /hreflang="x-default" href="https:\/\/example\.com\/posts\/translated\/"/,
+    );
     assert.match(englishPost, /fossbook-language/);
     assert.doesNotMatch(englishPost, /location\.replace/);
     assert.match(koreanPost, /<html lang="ko">/);
     assert.match(koreanPost, /한국어 제목/);
-    assert.match(koreanPost, /<div class="meta">올린 날: 2026년 8월 23일<\/div>/);
+    assert.match(
+      koreanPost,
+      /<div class="meta">올린 날: 2026년 8월 23일<\/div>/,
+    );
     assert.match(koreanPost, /<span aria-live="polite">링크 복사<\/span>/);
     assert.match(koreanPost, /"링크를 복사했습니다"/);
     assert.match(koreanPost, /"링크를 복사하지 못했습니다"/);
@@ -188,23 +239,53 @@ describe("Multilingual site build", () => {
     assert.match(koreanPost, /href="\/ko\/all_posts">모든 글<\/a>/);
     assert.match(koreanPost, /href="\/ko\/about">이곳은<\/a>/);
     assert.match(koreanPost, /href="\/ko\/tags">태그<\/a>/);
-    assert.match(koreanPost, /href="\/posts\/translated\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
-    assert.match(koreanPost, /href="\/ko\/posts\/translated\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
+    assert.match(
+      koreanPost,
+      /href="\/posts\/translated\/"[^>]*aria-label="English"[^>]*>EN<\/a>/,
+    );
+    assert.match(
+      koreanPost,
+      /href="\/ko\/posts\/translated\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/,
+    );
     assert.doesNotMatch(englishOnlyPost, /class="language-switcher"/);
     assert.doesNotMatch(englishOnlyPost, /hreflang="ko"/);
     assert.doesNotMatch(englishOnlyPost, /fossbook-language/);
     assert.match(englishAbout, /About this site/);
-    assert.match(englishAbout, /href="\/about\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
-    assert.match(englishAbout, /href="\/ko\/about\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
-    assert.match(englishAbout, /hreflang="ko" href="https:\/\/example\.com\/ko\/about\/"/);
+    assert.match(
+      englishAbout,
+      /href="\/about\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/,
+    );
+    assert.match(
+      englishAbout,
+      /href="\/ko\/about\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/,
+    );
+    assert.match(
+      englishAbout,
+      /hreflang="ko" href="https:\/\/example\.com\/ko\/about\/"/,
+    );
     assert.match(koreanAbout, /이곳은/);
     assert.match(koreanAbout, /href="\/ko\/">처음<\/a>/);
     assert.match(koreanAbout, /href="\/ko\/tags">태그<\/a>/);
-    assert.match(koreanAbout, /href="\/about\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
-    assert.match(koreanAbout, /href="\/ko\/about\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
-    assert.match(englishHome, /href="\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
-    assert.match(englishHome, /href="\/ko\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
-    assert.match(englishHome, /hreflang="ko" href="https:\/\/example\.com\/ko\/"/);
+    assert.match(
+      koreanAbout,
+      /href="\/about\/"[^>]*aria-label="English"[^>]*>EN<\/a>/,
+    );
+    assert.match(
+      koreanAbout,
+      /href="\/ko\/about\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/,
+    );
+    assert.match(
+      englishHome,
+      /href="\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/,
+    );
+    assert.match(
+      englishHome,
+      /href="\/ko\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/,
+    );
+    assert.match(
+      englishHome,
+      /hreflang="ko" href="https:\/\/example\.com\/ko\/"/,
+    );
     assert.match(englishHome, /fossbook-language/);
     assert.match(englishHome, /location\.replace/);
     assert.match(englishHome, /<title>My Blog<\/title>/);
@@ -218,25 +299,46 @@ describe("Multilingual site build", () => {
     assert.match(koreanHome, /href="\/ko\/about">이곳은<\/a>/);
     assert.match(koreanHome, /href="\/ko\/tags">태그<\/a>/);
     assert.match(koreanHome, /href="\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
-    assert.match(koreanHome, /href="\/ko\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
+    assert.match(
+      koreanHome,
+      /href="\/ko\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/,
+    );
     assert.match(koreanHome, /fossbook-language/);
     assert.doesNotMatch(koreanHome, /location\.replace/);
     assert.match(koreanHome, /<title>나의 블로그<\/title>/);
     assert.match(koreanHome, /<p>한국어 블로그<\/p>/);
     assert.match(koreanHome, />더 읽기 ⟶<\/a>/);
     assert.match(koreanHome, />← 앞으로<\/span>/);
-    assert.match(koreanHome, /<span class="pagination-separator" aria-hidden="true">\|<\/span>/);
+    assert.match(
+      koreanHome,
+      /<span class="pagination-separator" aria-hidden="true">\|<\/span>/,
+    );
     assert.match(koreanHome, />뒤로 →<\/span>/);
     assert.doesNotMatch(koreanHome, /Read more|>← Prev<|>Next →</);
     assert.match(koreanHome, /© \d{4} 이수현/);
     assert.doesNotMatch(koreanHome, /English only/);
-    assert.match(englishAllPosts, /href="\/all_posts\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
+    assert.match(
+      englishAllPosts,
+      /href="\/all_posts\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/,
+    );
     assert.match(englishAllPosts, /<h1 class="page-title">All posts<\/h1>/);
     assert.match(englishAllPosts, /Aug 23, 2026/);
-    assert.match(englishAllPosts, /href="\/ko\/all_posts\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
-    assert.match(englishAllPosts, /hreflang="ko" href="https:\/\/example\.com\/ko\/all_posts\/"/);
-    assert.match(koreanAllPosts, /href="\/all_posts\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
-    assert.match(koreanAllPosts, /href="\/ko\/all_posts\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
+    assert.match(
+      englishAllPosts,
+      /href="\/ko\/all_posts\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/,
+    );
+    assert.match(
+      englishAllPosts,
+      /hreflang="ko" href="https:\/\/example\.com\/ko\/all_posts\/"/,
+    );
+    assert.match(
+      koreanAllPosts,
+      /href="\/all_posts\/"[^>]*aria-label="English"[^>]*>EN<\/a>/,
+    );
+    assert.match(
+      koreanAllPosts,
+      /href="\/ko\/all_posts\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/,
+    );
     assert.match(koreanAllPosts, /<title>나의 블로그: 모든 글<\/title>/);
     assert.match(koreanAllPosts, /<h1 class="page-title">모든 글<\/h1>/);
     assert.match(koreanAllPosts, /2026년 8월 23일/);
@@ -251,19 +353,45 @@ describe("Multilingual site build", () => {
     assert.match(koreanTagList, /href="\/ko\/about">이곳은<\/a>/);
     assert.match(koreanTagList, /<title>나의 블로그: 모든 태그<\/title>/);
     assert.match(koreanTagList, /<h1 class="page-title">모든 태그<\/h1>/);
-    assert.match(koreanTagList, /href="\/tags\/"[^>]*aria-label="English"[^>]*>EN<\/a>/);
-    assert.match(koreanTagList, /href="\/ko\/tags\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/);
+    assert.match(
+      koreanTagList,
+      /href="\/tags\/"[^>]*aria-label="English"[^>]*>EN<\/a>/,
+    );
+    assert.match(
+      koreanTagList,
+      /href="\/ko\/tags\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/,
+    );
     assert.match(englishTagList, /<h1 class="page-title">All tags<\/h1>/);
-    assert.match(englishTagList, /href="\/tags\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/);
-    assert.match(englishTagList, /href="\/ko\/tags\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/);
-    assert.match(englishTagList, /hreflang="ko" href="https:\/\/example\.com\/ko\/tags\/"/);
+    assert.match(
+      englishTagList,
+      /href="\/tags\/"[^>]*aria-label="English"[^>]*aria-current="page"[^>]*>EN<\/a>/,
+    );
+    assert.match(
+      englishTagList,
+      /href="\/ko\/tags\/"[^>]*aria-label="한국어"[^>]*>KO<\/a>/,
+    );
+    assert.match(
+      englishTagList,
+      /hreflang="ko" href="https:\/\/example\.com\/ko\/tags\/"/,
+    );
     assert.match(koreanTag, /href="\/ko\/tags">태그<\/a>/);
     assert.strictEqual(
-      fs.existsSync(path.join(outputDir, "ko", "posts", "english-only", "index.html")),
+      fs.existsSync(
+        path.join(outputDir, "ko", "posts", "english-only", "index.html"),
+      ),
       false,
     );
     assert.strictEqual(
-      fs.existsSync(path.join(outputDir, "ko", "posts", "translated", "images", "panel.png")),
+      fs.existsSync(
+        path.join(
+          outputDir,
+          "ko",
+          "posts",
+          "translated",
+          "images",
+          "panel.png",
+        ),
+      ),
       true,
     );
     assert.strictEqual(
@@ -280,7 +408,9 @@ describe("Multilingual site build", () => {
       true,
     );
     assert.strictEqual(
-      fs.existsSync(path.join(outputDir, "ko", "posts", "draft-post", "index.html")),
+      fs.existsSync(
+        path.join(outputDir, "ko", "posts", "draft-post", "index.html"),
+      ),
       true,
     );
   });
