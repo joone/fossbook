@@ -126,6 +126,8 @@ module.exports = {
   imageOptimization: true,
   imageMaxWidth: 1400,
   imageMaxWidthOverride: 1200,
+  imageWebP: true,
+  imageResponsiveWidths: [600, 800, 1000],
   cacheDir: "./.fossbook-cache",
 
   // Optional: URL prefix for posts. Defaults to "posts" -> /posts/<slug>/.
@@ -166,6 +168,27 @@ settings in `cacheDir`, so unchanged images do not need to be processed again
 after `public` is rebuilt. Set `imageOptimization` to `false` to copy PNGs
 unchanged.
 
+The default cache is `.fossbook-cache/images/`, separate from both source
+artwork and `public/`. Each entry is keyed by the source bytes, transformation
+settings, Fossbook cache schema, and Sharp/libvips encoder versions. Fossbook
+validates cached image format and dimensions before use, regenerates missing or
+corrupt entries atomically, and prints cache hits, misses, and regenerated image
+counts at the end of each build. It also writes
+`.fossbook-cache/image-cache-status.json` for CI save decisions.
+
+New projects ignore `.fossbook-cache/` automatically. Existing sites should add
+this rule to `.gitignore`:
+
+```gitignore
+.fossbook-cache/
+```
+
+For post images, Fossbook also generates lossless WebP copies at the configured
+responsive widths. Generated HTML uses WebP when supported and retains the PNG
+as a fallback. Candidate widths larger than the source or publication limit are
+skipped, and duplicate widths produce only one file. Set `imageWebP` to `false`
+to publish only PNG copies.
+
 For small lettering or detailed diagrams, add `publish-width:1200` to the
 existing Markdown image title. Overrides are capped by
 `imageMaxWidthOverride`:
@@ -173,6 +196,127 @@ existing Markdown image title. Overrides are capped by
 ```markdown
 ![Detailed diagram](images/diagram.png "publish-width:1200 Detailed diagram")
 ```
+
+### GitHub Actions image cache
+
+`fossbook init` generates a deployment workflow with the image cache
+configuration below. Existing consumer sites can use this complete workflow.
+The resolve step reads the site's effective Fossbook configuration, so custom
+`cacheDir`, `postsDir`, `staticDir`, and theme paths are handled automatically.
+With the defaults, the exact archived path is `.fossbook-cache/images`.
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve Fossbook image cache
+        id: image-cache-config
+        run: node -e "require('fossbook/lib/mod/github_cache').writeGitHubCacheOutputs()"
+
+      - name: Restore Fossbook image cache
+        id: image-cache-restore
+        uses: actions/cache/restore@v4
+        continue-on-error: true
+        with:
+          path: ${{ steps.image-cache-config.outputs.cache-path }}/images
+          key: ${{ runner.os }}-${{ runner.arch }}-fossbook-images-v4-${{ steps.image-cache-config.outputs.input-hash }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-fossbook-images-v4-${{ steps.image-cache-config.outputs.input-hash }}-
+            ${{ runner.os }}-${{ runner.arch }}-fossbook-images-v4-
+
+      - name: Build site
+        run: npx fossbook build
+
+      - name: Read Fossbook image cache status
+        id: image-cache-status
+        continue-on-error: true
+        shell: bash
+        env:
+          FOSSBOOK_CACHE_STATUS: ${{ steps.image-cache-config.outputs.status-path }}
+        run: |
+          node -e "const fs=require('fs');let writes=0;try{writes=JSON.parse(fs.readFileSync(process.env.FOSSBOOK_CACHE_STATUS,'utf8')).writes||0}catch(error){console.warn(error.message)}fs.appendFileSync(process.env.GITHUB_OUTPUT, 'new-entries='+(writes>0)+'\n')"
+
+      - name: Save Fossbook image cache
+        if: ${{ steps.image-cache-restore.outputs.cache-hit != 'true' && steps.image-cache-status.outputs.new-entries == 'true' }}
+        uses: actions/cache/save@v4
+        continue-on-error: true
+        with:
+          path: ${{ steps.image-cache-config.outputs.cache-path }}/images
+          key: ${{ runner.os }}-${{ runner.arch }}-fossbook-images-v4-${{ steps.image-cache-config.outputs.input-hash }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        with:
+          enablement: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./public"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+GitHub cache archives are immutable. The resolve helper computes an input hash
+from dependencies, effective image settings, Markdown image metadata, source
+artwork, and custom theme PNGs. The save key adds the unique workflow run and
+attempt, while restore first searches the matching input-hash prefix and then
+the broader OS/architecture/schema prefix. This lets a regenerated corrupt
+entry be saved as a newer archive instead of repeatedly selecting an immutable
+damaged archive. Fossbook's per-image keys remain authoritative, so changing
+one image or one output setting regenerates only affected results. Markdown
+prose is excluded from the input hash and does not create redundant archives.
+
+An exact cache hit is never saved again. A partial or cold restore is saved only
+when Fossbook reports newly generated entries. Cache restore, status, and save
+steps use `continue-on-error`, so expiration, eviction, quota failures, and
+service outages fall back to a normal cold build. To reset manually, delete the
+repository cache in GitHub's Actions cache settings or increment
+`fossbook-images-v4` in both key locations; the next build recreates it.
+
+The example runs only for trusted pushes. GitHub may allow pull requests and
+forks to read caches accessible from their base branch. Because processed
+artwork can still disclose source content, do not enable these cache steps in
+untrusted workflows when the artwork is private. Do not use
+`pull_request_target` for publication builds. Only
+`.fossbook-cache/images` is archived, so source PDFs, secrets, `public/`, and
+unrelated build files are excluded.
+
+Fossbook's own [CI workflow](./.github/workflows/build.yml) tests the generator
+and cache behavior; it is distinct from this consumer-site publication
+workflow and does not archive production artwork.
 
 ## Content Format
 
