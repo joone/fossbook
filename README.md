@@ -122,6 +122,12 @@ module.exports = {
   image: "https://example.com/default-image.png",
   theme: "archie",
 
+  // PNG publishing optimization (defaults shown)
+  imageOptimization: true,
+  imageMaxWidth: 1400,
+  imageMaxWidthOverride: 1200,
+  cacheDir: "./.fossbook-cache",
+
   // Optional: URL prefix for posts. Defaults to "posts" -> /posts/<slug>/.
   // Set to "" to serve posts at the site root, /<slug>/.
   postsPath: "posts",
@@ -149,6 +155,23 @@ module.exports = {
   staticDir: "./static",
   themesDir: "./themes",
 };
+```
+
+During a build, Fossbook resizes PNGs from post and static image directories to
+`imageMaxWidth` while preserving their aspect ratio. Source images are never
+changed, images are never enlarged or cropped, and images already within the
+limit retain their original published bytes when lossless optimization would
+increase the file size. Processed images are cached by source content and
+settings in `cacheDir`, so unchanged images do not need to be processed again
+after `public` is rebuilt. Set `imageOptimization` to `false` to copy PNGs
+unchanged.
+
+For small lettering or detailed diagrams, add `publish-width:1200` to the
+existing Markdown image title. Overrides are capped by
+`imageMaxWidthOverride`:
+
+```markdown
+![Detailed diagram](images/diagram.png "publish-width:1200 Detailed diagram")
 ```
 
 ## Content Format

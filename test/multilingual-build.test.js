@@ -65,7 +65,7 @@ describe("Multilingual site build", () => {
     ]);
   });
 
-  it("generates separate static output for each configured language", () => {
+  it("generates separate static output for each configured language", async () => {
     const contentDir = path.join(tempDir, "content");
     const postsDir = path.join(contentDir, "posts");
     const outputDir = path.join(tempDir, "public");
@@ -120,7 +120,7 @@ describe("Multilingual site build", () => {
     );
     config.languageConfigs = createLanguageConfigs(config, configPath);
 
-    build(config);
+    await build(config);
 
     const englishPost = fs.readFileSync(
       path.join(outputDir, "posts", "translated", "index.html"),
@@ -273,7 +273,7 @@ describe("Multilingual site build", () => {
     assert.doesNotMatch(englishHome, /Draft post/);
 
     config.includeDrafts = true;
-    build(config);
+    await build(config);
 
     assert.strictEqual(
       fs.existsSync(path.join(outputDir, "posts", "draft-post", "index.html")),
