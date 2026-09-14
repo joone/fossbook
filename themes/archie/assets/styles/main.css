@@ -101,6 +101,79 @@
     outline-offset: 2px;
   }
 
+  .comic-block-share {
+    border: 1px solid var(--bordercl);
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: .75rem auto 1.25rem;
+    max-width: var(--dialogue-width, 100%);
+    padding: .6rem .7rem;
+    width: var(--dialogue-width, 100%);
+  }
+
+  .comic-share-heading {
+    font-size: .8rem;
+    margin: 0 0 .4rem;
+  }
+
+  .comic-share-inputs {
+    align-items: center;
+    display: flex;
+    gap: .5rem;
+    margin-bottom: .55rem;
+  }
+
+  .comic-share-comment-label {
+    flex: 0 0 auto;
+    font-size: .78rem;
+  }
+
+  .comic-share-comment-input {
+    border: 1px solid var(--bordercl);
+    border-radius: 4px;
+    flex: 1 1 auto;
+    font: inherit;
+    font-size: .78rem;
+    min-height: 1.75rem;
+    padding: .2rem .35rem;
+  }
+
+  .comic-share-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+  }
+
+  .comic-share-button {
+    background: transparent;
+    border: 1px solid var(--bordercl);
+    border-radius: 4px;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    font-size: .75rem;
+    line-height: 1.2;
+    min-height: 1.75rem;
+    padding: .15rem .4rem;
+  }
+
+  .comic-share-button:hover {
+    background: var(--hovercolor);
+    color: #fff;
+  }
+
+  .comic-share-button:focus-visible,
+  .comic-share-comment-input:focus-visible {
+    outline: 2px solid var(--hovercolor);
+    outline-offset: 2px;
+  }
+
+  .comic-share-status {
+    font-size: .74rem;
+    margin: .4rem 0 0;
+    min-height: 1em;
+  }
+
   .transcript-toggle {
     align-items: center;
     display: inline-flex;
@@ -373,6 +446,16 @@
   @media screen and (max-width: 599px) {
     .panel-group {
       grid-template-columns: 1fr;
+    }
+
+    .comic-share-inputs {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: .25rem;
+    }
+
+    .comic-share-comment-input {
+      width: 100%;
     }
 
     .sized-image {

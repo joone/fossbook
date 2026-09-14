@@ -35,6 +35,27 @@ describe("Comic transcript toggle", () => {
     assert.match(template, /page\.config\.copyLinkErrorLabel \|\| "Could not copy link"/);
   });
 
+  it("renders per-block share controls for comic dialogue with localized labels", () => {
+    assert.match(template, /document\.querySelectorAll\("\.image-container \+ \.image-dialogue"\)/);
+    assert.match(template, /className = "comic-block-share"/);
+    assert.match(template, /page\.config\.shareBlockLabel \|\| "Share this block"/);
+    assert.match(template, /page\.config\.shareCommentLabel \|\| "Comment"/);
+    assert.match(template, /page\.config\.shareCommentPlaceholder \|\| "Add your comment \(optional\)"/);
+    assert.match(template, /page\.config\.shareOnXLabel \|\| "Share on X"/);
+    assert.match(template, /page\.config\.shareOnFacebookLabel \|\| "Share on Facebook"/);
+    assert.match(template, /page\.config\.shareOnInstagramLabel \|\| "Copy text and open Instagram"/);
+    assert.match(template, /page\.config\.instagramShareCopiedLabel \|\| "Copied\. Continue in Instagram\."/);
+    assert.match(template, /page\.config\.instagramShareCopyErrorLabel \|\| "Could not copy text for Instagram"/);
+    assert.match(template, /https:\/\/twitter\.com\/intent\/tweet/);
+    assert.match(template, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php/);
+    assert.match(template, /https:\/\/www\.instagram\.com\//);
+  });
+
+  it("preserves dialogue line breaks when building share text", () => {
+    assert.match(template, /if \(node\.tagName === "BR"\) return "\\n";/);
+    assert.match(template, /join\("\\n\\n"\)/);
+  });
+
   it("defaults transcripts off visually without hiding them from screen readers", () => {
     assert.match(template, /document\.documentElement\.classList\.add\("transcripts-hidden"\)/);
     assert.match(template, /localStorage\.getItem\("fossbook-comic-transcript"\) === "visible"/);
@@ -68,6 +89,13 @@ describe("Comic transcript toggle", () => {
   it("keeps transcripts visible when printing", () => {
     assert.match(styles, /@media print[\s\S]*\.post-controls\s*{\s*display: none;/);
     assert.match(styles, /@media print[\s\S]*\.transcripts-hidden \.image-dialogue\s*{\s*display: flex;[\s\S]*?position: static !important;/);
+  });
+
+  it("styles comic block share controls", () => {
+    assert.match(styles, /\.comic-block-share\s*{\s*border: 1px solid var\(--bordercl\);/);
+    assert.match(styles, /\.comic-share-buttons\s*{\s*display: flex;/);
+    assert.match(styles, /\.comic-share-button:hover\s*{\s*background: var\(--hovercolor\);/);
+    assert.match(styles, /\.comic-share-status\s*{\s*font-size: \.74rem;/);
   });
 
   it("uses Korean fonts for body text and dialogue", () => {

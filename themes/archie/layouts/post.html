@@ -139,30 +139,169 @@
           copyLinkButton.addEventListener("click", copyEpisodeLink);
         </script>
         ${page.body.includes('class="blockquote-container image-dialogue"') ? `<script>
-          const transcriptToggle = document.querySelector("#comic-transcript-toggle");
-          const transcriptStorageKey = "fossbook-comic-transcript";
-          const setTranscriptVisibility = (visible) => {
-            document.documentElement.classList.toggle("transcripts-hidden", !visible);
-            transcriptToggle.checked = visible;
-          };
-          setTranscriptVisibility(!document.documentElement.classList.contains("transcripts-hidden"));
-          transcriptToggle.addEventListener("change", () => {
-            const visible = transcriptToggle.checked;
-            setTranscriptVisibility(visible);
-            try {
-              localStorage.setItem(transcriptStorageKey, visible ? "visible" : "hidden");
-            } catch (error) {}
-          });
-
-          document.querySelectorAll(".image-container + .image-dialogue").forEach((dialogue) => {
-            const image = dialogue.previousElementSibling.querySelector("img");
-            const syncDialogueWidth = () => {
-              dialogue.style.setProperty("--dialogue-width", image.getBoundingClientRect().width + "px");
+          (() => {
+            const transcriptToggle = document.querySelector("#comic-transcript-toggle");
+            const transcriptStorageKey = "fossbook-comic-transcript";
+            const setTranscriptVisibility = (visible) => {
+              document.documentElement.classList.toggle("transcripts-hidden", !visible);
+              transcriptToggle.checked = visible;
             };
-            if (!image.complete) image.addEventListener("load", syncDialogueWidth, { once: true });
-            new ResizeObserver(syncDialogueWidth).observe(image);
-            syncDialogueWidth();
-          });
+            setTranscriptVisibility(!document.documentElement.classList.contains("transcripts-hidden"));
+            transcriptToggle.addEventListener("change", () => {
+              const visible = transcriptToggle.checked;
+              setTranscriptVisibility(visible);
+              try {
+                localStorage.setItem(transcriptStorageKey, visible ? "visible" : "hidden");
+              } catch (error) {}
+            });
+
+            const shareDefaults = {
+              heading: ${JSON.stringify(page.config.shareBlockLabel || "Share this block")},
+              comment: ${JSON.stringify(page.config.shareCommentLabel || "Comment")},
+              commentPlaceholder: ${JSON.stringify(page.config.shareCommentPlaceholder || "Add your comment (optional)")},
+              shareOnX: ${JSON.stringify(page.config.shareOnXLabel || "Share on X")},
+              shareOnFacebook: ${JSON.stringify(page.config.shareOnFacebookLabel || "Share on Facebook")},
+              shareOnInstagram: ${JSON.stringify(page.config.shareOnInstagramLabel || "Copy text and open Instagram")},
+              copiedForInstagram: ${JSON.stringify(page.config.instagramShareCopiedLabel || "Copied. Continue in Instagram.")},
+              shareCopyError: ${JSON.stringify(page.config.instagramShareCopyErrorLabel || "Could not copy text for Instagram")},
+            };
+
+            const canonicalLink = document.querySelector('link[rel="canonical"]');
+            const canonicalUrl = canonicalLink ? canonicalLink.href : window.location.href.split("#")[0];
+
+            const copyText = async (value) => {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(value);
+                return;
+              }
+              const textArea = document.createElement("textarea");
+              textArea.value = value;
+              textArea.setAttribute("readonly", "");
+              textArea.style.position = "fixed";
+              textArea.style.opacity = "0";
+              document.body.appendChild(textArea);
+              textArea.select();
+              const copied = document.execCommand("copy");
+              textArea.remove();
+              if (!copied) throw new Error("Copy command failed");
+            };
+
+            const readNodeWithLineBreaks = (node) => {
+              if (!node) return "";
+              if (node.nodeType === Node.TEXT_NODE) return node.textContent || "";
+              if (node.nodeType !== Node.ELEMENT_NODE) return "";
+              if (node.tagName === "BR") return "\n";
+              return Array.from(node.childNodes).map((child) => readNodeWithLineBreaks(child)).join("");
+            };
+
+            const extractDialogueText = (dialogue) => {
+              const blockquote = dialogue.querySelector("blockquote");
+              if (!blockquote) return "";
+              const paragraphs = Array.from(blockquote.querySelectorAll("p"));
+              if (paragraphs.length === 0) return blockquote.textContent.trim();
+              return paragraphs
+                .map((paragraph) => readNodeWithLineBreaks(paragraph).trim())
+                .filter(Boolean)
+                .join("\n\n");
+            };
+
+            const buildSharePayload = (dialogue, blockUrl, commentText) => {
+              const imageContainer = dialogue.previousElementSibling;
+              const image = imageContainer?.querySelector("img");
+              const figcaption = imageContainer?.querySelector("figcaption");
+              const lines = [];
+              if (commentText) lines.push(commentText);
+              if (image?.alt?.trim()) lines.push(image.alt.trim());
+              if (figcaption?.textContent?.trim()) lines.push(figcaption.textContent.trim());
+              const dialogueText = extractDialogueText(dialogue);
+              if (dialogueText) lines.push(dialogueText);
+              if (image?.getAttribute("src")) {
+                lines.push(new URL(image.getAttribute("src"), window.location.href).href);
+              }
+              lines.push(blockUrl);
+              return lines.join("\n\n");
+            };
+
+            const openShareUrl = (url) => {
+              const popup = window.open(url, "_blank", "noopener,noreferrer");
+              if (popup) return;
+              window.location.href = url;
+            };
+
+            document.querySelectorAll(".image-container + .image-dialogue").forEach((dialogue, index) => {
+              const image = dialogue.previousElementSibling.querySelector("img");
+              const blockId = "comic-block-" + (index + 1);
+              dialogue.id = blockId;
+              const blockUrl = canonicalUrl + "#" + blockId;
+              const syncDialogueWidth = () => {
+                dialogue.style.setProperty("--dialogue-width", image.getBoundingClientRect().width + "px");
+              };
+              if (!image.complete) image.addEventListener("load", syncDialogueWidth, { once: true });
+              new ResizeObserver(syncDialogueWidth).observe(image);
+              syncDialogueWidth();
+
+              const controls = document.createElement("section");
+              controls.className = "comic-block-share";
+              controls.innerHTML = '<p class="comic-share-heading"></p>\
+                <div class="comic-share-inputs">
+                  <label class="comic-share-comment-label"></label>
+                  <input class="comic-share-comment-input" type="text">
+                </div>
+                <div class="comic-share-buttons">
+                  <button class="comic-share-button comic-share-x" type="button"></button>
+                  <button class="comic-share-button comic-share-facebook" type="button"></button>
+                  <button class="comic-share-button comic-share-instagram" type="button"></button>
+                </div>
+                <p class="comic-share-status" role="status" aria-live="polite"></p>';
+              controls.querySelector(".comic-share-heading").textContent = shareDefaults.heading;
+              controls.querySelector(".comic-share-comment-label").textContent = shareDefaults.comment;
+              const commentInput = controls.querySelector(".comic-share-comment-input");
+              commentInput.placeholder = shareDefaults.commentPlaceholder;
+              commentInput.setAttribute("aria-label", shareDefaults.comment);
+
+              const shareOnXButton = controls.querySelector(".comic-share-x");
+              shareOnXButton.textContent = shareDefaults.shareOnX;
+              shareOnXButton.setAttribute("aria-label", shareDefaults.shareOnX);
+
+              const shareOnFacebookButton = controls.querySelector(".comic-share-facebook");
+              shareOnFacebookButton.textContent = shareDefaults.shareOnFacebook;
+              shareOnFacebookButton.setAttribute("aria-label", shareDefaults.shareOnFacebook);
+
+              const shareOnInstagramButton = controls.querySelector(".comic-share-instagram");
+              shareOnInstagramButton.textContent = shareDefaults.shareOnInstagram;
+              shareOnInstagramButton.setAttribute("aria-label", shareDefaults.shareOnInstagram);
+
+              const shareStatus = controls.querySelector(".comic-share-status");
+
+              const getPayload = () => {
+                return buildSharePayload(dialogue, blockUrl, commentInput.value.trim());
+              };
+
+              shareOnXButton.addEventListener("click", () => {
+                const text = getPayload();
+                const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(blockUrl);
+                openShareUrl(url);
+              });
+
+              shareOnFacebookButton.addEventListener("click", () => {
+                const quote = getPayload();
+                const url = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(blockUrl) + "&quote=" + encodeURIComponent(quote);
+                openShareUrl(url);
+              });
+
+              shareOnInstagramButton.addEventListener("click", async () => {
+                try {
+                  await copyText(getPayload());
+                  shareStatus.textContent = shareDefaults.copiedForInstagram;
+                } catch (error) {
+                  shareStatus.textContent = shareDefaults.shareCopyError;
+                }
+                openShareUrl("https://www.instagram.com/");
+              });
+
+              dialogue.insertAdjacentElement("afterend", controls);
+            });
+          })();
         </script>` : ""}
     </body>
 </html>

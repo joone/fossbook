@@ -101,6 +101,16 @@ image and displays a transcript visibility control on posts that contain this
 pattern. A blank line between the image and blockquote is allowed. Intervening
 prose breaks the association, leaving the blockquote as an ordinary quotation.
 
+### Block Sharing (Archie theme)
+
+For each image+dialogue pair, Archie renders share controls for X, Facebook,
+and Instagram. The optional comment input is included in the shared text.
+
+Fossbook preserves dialogue line and paragraph breaks in the generated share
+text using the same authored Markdown structure (including explicit `\` line
+breaks). Instagram web sharing does not support prefilling a post, so Fossbook
+copies the composed text to the clipboard and opens Instagram for manual paste.
+
 ### Comic Panels
 
 Wrap related prose, artwork, and dialogue in a bordered `panel` container.
