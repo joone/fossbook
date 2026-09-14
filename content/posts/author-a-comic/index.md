@@ -28,4 +28,29 @@ Every scene can combine narration, art, captions, and accessible dialogue.
 ![A cartoonist assembles colorful blocks into a larger structure.](/images/fossbook-comic-authoring.png "size:60% A panel groups the ingredients of a scene.")
 :::
 
+## Frame the scene
+
+Panels begin with a subtle solid border, but you can make each scene feel
+different by changing its thickness, style, color, or complete border value.
+
+::::panels columns="3" style="gap: 1rem;" label="Panel border examples"
+:::panel style="border-width: 4px;"
+**Bold outline**
+
+![A cartoonist assembles colorful blocks into a larger structure.](/images/fossbook-comic-authoring.png "A thicker border emphasizes an important scene.")
+:::
+
+:::panel style="border-style: dashed; border-color: #b45309;"
+**Dashed frame**
+
+![A cartoonist assembles colorful blocks into a larger structure.](/images/fossbook-comic-authoring.png "A dashed amber border gives a scene a lighter tone.")
+:::
+
+:::panel style="border: 3px double #2563eb;"
+**Double border**
+
+![A cartoonist assembles colorful blocks into a larger structure.](/images/fossbook-comic-authoring.png "The border shorthand sets width, style, and color together.")
+:::
+::::
+
 Next: [arrange a responsive comic page](../responsive-panels/ "align:right").
