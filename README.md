@@ -365,6 +365,12 @@ also adds a transcript visibility control when a work contains image-linked
 dialogue. Alternative text, captions, group labels, and transcript text remain
 part of the authored source rather than being baked into the page layout.
 
+When an image is followed by dialogue, Archie also renders per-block share
+controls for X, Facebook, and Instagram. The optional comment field is appended
+to the generated share text. Instagram cannot accept prefilled post text from
+the web, so Fossbook copies the block text (including dialogue line and
+paragraph breaks) and opens Instagram for manual paste.
+
 See [Fossbook Markdown](fossbook_markdown.md) for the complete syntax for
 panels, responsive groups, image presentation, dialogue, aligned links,
 Mermaid diagrams, and syntax-highlighted code.
@@ -482,6 +488,14 @@ module.exports = {
   copyLinkLabel: "링크 복사",
   linkCopiedLabel: "링크를 복사했습니다",
   copyLinkErrorLabel: "링크를 복사하지 못했습니다",
+  shareBlockLabel: "이 장면 공유",
+  shareCommentLabel: "의견",
+  shareCommentPlaceholder: "의견을 덧붙여 공유하세요 (선택)",
+  shareOnXLabel: "X에 공유",
+  shareOnFacebookLabel: "페이스북에 공유",
+  shareOnInstagramLabel: "문구 복사 후 인스타그램 열기",
+  instagramShareCopiedLabel: "문구를 복사했습니다. 인스타그램에서 붙여넣으세요.",
+  instagramShareCopyErrorLabel: "인스타그램 공유 문구를 복사하지 못했습니다",
 };
 ```
 
