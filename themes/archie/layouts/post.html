@@ -13,6 +13,7 @@
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.title}</title>
+        ${page.feedLinks()}
         <meta name="description" content="${page.description}" />
         <link rel="canonical" href="${page.url}" />
         ${page.alternateLanguageLinks()}

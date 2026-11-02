@@ -9,6 +9,7 @@
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.config.blogName}</title>
+        ${page.feedLinks()}
         <meta name="description" content="${page.config.blogDescription}" />
         <link rel="canonical" href="${page.url}" />
         ${page.alternateLanguageLinks()}

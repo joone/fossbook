@@ -190,6 +190,35 @@ describe("Multilingual site build", () => {
       "utf8",
     );
 
+    const englishFeed = fs.readFileSync(path.join(outputDir, "feed.xml"), "utf8");
+    const koreanFeed = fs.readFileSync(
+      path.join(outputDir, "ko", "feed.xml"),
+      "utf8",
+    );
+    assert.match(englishFeed, /xml:lang="en"/);
+    assert.match(englishFeed, /<title>English title<\/title>/);
+    assert.match(englishFeed, /<title>English only<\/title>/);
+    assert.doesNotMatch(englishFeed, /Draft post/);
+    assert.doesNotMatch(englishFeed, /한국어 제목/);
+    assert.match(
+      englishFeed,
+      /&lt;img src=&quot;https:\/\/example\.com\/posts\/translated\/images\/panel\.png&quot;/,
+    );
+    assert.match(koreanFeed, /xml:lang="ko"/);
+    assert.match(koreanFeed, /<title>나의 블로그<\/title>/);
+    assert.match(koreanFeed, /<title>한국어 제목<\/title>/);
+    assert.doesNotMatch(koreanFeed, /English only/);
+    assert.doesNotMatch(koreanFeed, /초안/);
+    assert.match(
+      koreanFeed,
+      /&lt;img src=&quot;https:\/\/example\.com\/ko\/posts\/translated\/images\/panel\.png&quot;/,
+    );
+    assert.match(
+      koreanPost,
+      /<link rel="alternate" type="application\/atom\+xml" title="나의 블로그 \(한국어\)" hreflang="ko" href="https:\/\/example\.com\/ko\/feed\.xml" \/>/,
+    );
+    assert.match(englishHome, /href="\/feed\.xml" title="Atom feed"/);
+
     assert.match(englishPost, /<html lang="en">/);
     assert.match(englishPost, /English title/);
     assert.match(englishPost, /Updated prose only/);
@@ -248,7 +277,9 @@ describe("Multilingual site build", () => {
       /href="\/ko\/posts\/translated\/"[^>]*aria-label="한국어"[^>]*aria-current="page"[^>]*>KO<\/a>/,
     );
     assert.doesNotMatch(englishOnlyPost, /class="language-switcher"/);
-    assert.doesNotMatch(englishOnlyPost, /hreflang="ko"/);
+    // No Korean page alternate; the site-wide Korean feed link is expected.
+    assert.doesNotMatch(englishOnlyPost, /<link rel="alternate" hreflang="ko"/);
+    assert.match(englishOnlyPost, /type="application\/atom\+xml"[^>]*hreflang="ko"/);
     assert.doesNotMatch(englishOnlyPost, /fossbook-language/);
     assert.match(englishAbout, /About this site/);
     assert.match(
