@@ -628,6 +628,8 @@ can call `${page.feedLinks()}` inside `<head>` to do the same.
 language in `fossbook.config.<language>.js`, and the feed uses those values.
 If `authorName` is empty, the feed uses `blogName` as its author and prints a
 warning. At least one of these names must be non-empty to generate a feed.
+Setting `feed: false` for a language also removes links to that language's
+feed from other languages' pages and feeds. Links to translated posts remain.
 
 ## CLI Reference
 

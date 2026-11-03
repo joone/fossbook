@@ -3,7 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { build, createAboutTranslations } = require("../lib");
-const { createLanguageConfigs } = require("../lib/mod/config");
+const { createLanguageConfigs, loadConfig } = require("../lib/mod/config");
 
 function writePost(postsDir, slug, fileName, title, draft = false) {
   const postDir = path.join(postsDir, slug);
@@ -69,6 +69,95 @@ describe("Multilingual site build", () => {
         isDefault: true,
       },
     ]);
+  });
+
+  it("removes disabled language feeds and their discovery links on rebuild", async function () {
+    this.timeout(10000);
+    const contentDir = path.join(tempDir, "content");
+    const postsDir = path.join(contentDir, "posts");
+    writePost(postsDir, "translated", "index.md", "English title");
+    writePost(postsDir, "translated", "index.ko.md", "Korean title");
+    writePage(contentDir, "about.md", "About");
+    writePage(contentDir, "about.ko.md", "About Korean");
+    const configPath = path.join(tempDir, "fossbook.config.js");
+    fs.writeFileSync(
+      configPath,
+      `module.exports = ${JSON.stringify({
+        blogName: "Feed test",
+        authorName: "Author",
+        blogsite: "https://example.com/blog",
+        basePath: "/blog/",
+        feed: false,
+        languages: {
+          en: { languageName: "English", feed: true },
+          ko: { languageName: "Korean", feed: true },
+        },
+        content: contentDir,
+        postsDir,
+        outputDir: path.join(tempDir, "public"),
+        cacheDir: path.join(tempDir, ".fossbook-cache"),
+        staticDir: path.join(tempDir, "static"),
+        themesDir: path.resolve(__dirname, "../themes"),
+        imageOptimization: false,
+      })};\n`,
+    );
+    const config = loadConfig(configPath);
+    await build(config);
+    for (const languageConfig of config.languageConfigs) {
+      assert.ok(
+        fs.existsSync(path.join(languageConfig.dev.outdir, "feed.xml")),
+      );
+    }
+
+    for (const enabled of [[true, false], [false, true], [false, false]]) {
+      config.languageConfigs.forEach((languageConfig, index) => {
+        languageConfig.feed = enabled[index];
+      });
+      await build(config);
+      for (const languageConfig of config.languageConfigs) {
+        const feedFile = path.join(languageConfig.dev.outdir, "feed.xml");
+        assert.strictEqual(
+          fs.existsSync(feedFile),
+          languageConfig.feed,
+        );
+        for (const pagePath of [
+          "index.html",
+          path.join("posts", "translated", "index.html"),
+          path.join("about", "index.html"),
+          path.join("all_posts", "index.html"),
+          path.join("tags", "index.html"),
+          path.join("tags", "test", "index.html"),
+        ]) {
+          const html = fs.readFileSync(
+            path.join(languageConfig.dev.outdir, pagePath),
+            "utf8",
+          );
+          if (!languageConfig.feed) {
+            assert.doesNotMatch(html, /feed\.xml|application\/atom\+xml/);
+          } else {
+            assert.ok(html.includes(`${languageConfig.blogsite}/feed.xml`));
+            assert.ok(
+              html.includes(
+                `href="${languageConfig.basePath}feed.xml" title="Atom feed"`,
+              ),
+            );
+            for (const disabled of config.languageConfigs.filter(
+              (c) => !c.feed,
+            )) {
+              assert.ok(!html.includes(`${disabled.blogsite}/feed.xml`));
+            }
+          }
+        }
+        if (languageConfig.feed) {
+          const xml = fs.readFileSync(feedFile, "utf8");
+          const other = config.languageConfigs.find(
+            (c) => c.language !== languageConfig.language,
+          );
+          assert.ok(!xml.includes(`${other.blogsite}/feed.xml`));
+          assert.ok(xml.includes(`${other.blogsite}/posts/translated/`));
+        }
+      }
+    }
   });
 
   it("generates separate static output for each configured language", async function () {

@@ -316,4 +316,41 @@ describe("Atom feed", () => {
       "",
     );
   });
+
+  it("excludes disabled language feeds without excluding post translations", () => {
+    const languageConfigs = [
+      { ...config, feed: true },
+      {
+        ...config,
+        language: "ko",
+        basePath: "/ko/",
+        blogsite: "https://example.com/ko",
+        feed: false,
+      },
+    ];
+    const feedTranslations = createFeedTranslations(languageConfigs);
+    assert.deepStrictEqual(
+      feedTranslations.map((feed) => feed.language),
+      ["en"],
+    );
+
+    const enabledConfig = { ...config, feedTranslations };
+    const links = new PageBase(enabledConfig).feedLinks();
+    assert.match(links, /href="https:\/\/example\.com\/feed\.xml"/);
+    assert.doesNotMatch(links, /\/ko\/feed\.xml/);
+    const xml = renderFeed(enabledConfig, [samplePost()]);
+    assert.doesNotMatch(xml, /\/ko\/feed\.xml/);
+    assert.match(
+      xml,
+      /type="text\/html" hreflang="ko"[^>]*href="https:\/\/example\.com\/ko\/posts\//,
+    );
+    assert.strictEqual(
+      new PageBase({ ...languageConfigs[1], feedTranslations }).feedLinks(),
+      "",
+    );
+    assert.deepStrictEqual(
+      createFeedTranslations(languageConfigs.map((c) => ({ ...c, feed: false }))),
+      [],
+    );
+  });
 });
