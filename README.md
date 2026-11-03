@@ -602,6 +602,8 @@ each language at the root of that language's output: `/feed.xml` for the
 default language and `/<language>/feed.xml` for translations, such as
 `/ko/feed.xml`. Each feed lists only posts written in its language, and each
 entry links to the post's other translations.
+This repository's demo sets `feedLimit: 0` to include every published post
+in each language's feed.
 
 Entries include the title, publication date, tags, a plain-text summary from
 the post's front-matter `description`, and a link to read the original post.

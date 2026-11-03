@@ -223,6 +223,20 @@ describe("Atom feed", () => {
     );
   });
 
+  it("includes all posts beyond the default limit when feedLimit is zero", () => {
+    const posts = Array.from({ length: 25 }, (_, index) =>
+      samplePost({
+        title: `Post ${index + 1}`,
+        url: `https://example.com/posts/${index + 1}/`,
+      }),
+    );
+    const xml = renderFeed({ ...config, feedLimit: 0 }, posts);
+    assert.strictEqual((xml.match(/<entry>/g) || []).length, 25);
+    for (const post of posts) {
+      assert.ok(xml.includes(`<title>${post.title}</title>`));
+    }
+  });
+
   it("uses the blog name with a warning when the author is empty", () => {
     const warnings = [];
     const originalWarn = console.warn;
