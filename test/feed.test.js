@@ -141,6 +141,52 @@ describe("Atom feed", () => {
     );
   });
 
+  it("uses the blog name with a warning when the author is empty", () => {
+    const warnings = [];
+    const originalWarn = console.warn;
+    console.warn = (message) => warnings.push(message);
+    try {
+      for (const authorName of ["", " \t ", undefined]) {
+        for (const posts of [[], [samplePost()]]) {
+          const xml = renderFeed({ ...config, authorName }, posts);
+          const authors = xml.match(
+            /<author><name>Comics &amp; Co<\/name><\/author>/g,
+          );
+          assert.strictEqual(authors.length, posts.length + 1);
+        }
+      }
+      assert.strictEqual(warnings.length, 6);
+      for (const warning of warnings) {
+        assert.match(warning, /authorName is empty; using blogName/);
+      }
+    } finally {
+      console.warn = originalWarn;
+    }
+  });
+
+  it("preserves the configured author without a fallback warning", () => {
+    const warnings = [];
+    const originalWarn = console.warn;
+    console.warn = (message) => warnings.push(message);
+    try {
+      const xml = renderFeed(config, [samplePost()]);
+      assert.strictEqual(
+        (xml.match(/<author><name>Jane<\/name><\/author>/g) || []).length,
+        2,
+      );
+      assert.deepStrictEqual(warnings, []);
+    } finally {
+      console.warn = originalWarn;
+    }
+  });
+
+  it("rejects feeds without an author name or blog name", () => {
+    assert.throws(
+      () => renderFeed({ ...config, authorName: "", blogName: " " }, []),
+      /Atom feeds require a non-empty authorName or blogName/,
+    );
+  });
+
   it("can be disabled", () => {
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), "fossbook-feed-"));
     try {

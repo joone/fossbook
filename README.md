@@ -624,6 +624,8 @@ can call `${page.feedLinks()}` inside `<head>` to do the same.
 
 `blogName`, `blogDescription`, `authorName`, and the labels can be set per
 language in `fossbook.config.<language>.js`, and the feed uses those values.
+If `authorName` is empty, the feed uses `blogName` as its author and prints a
+warning. At least one of these names must be non-empty to generate a feed.
 
 ## CLI Reference
 
