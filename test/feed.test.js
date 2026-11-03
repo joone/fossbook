@@ -120,7 +120,33 @@ describe("Atom feed", () => {
       xml,
       /<media:thumbnail url="https:\/\/example\.com\/posts\/1\.%20Babbage\/images\/feature\.webp"\/>/,
     );
-    assert.match(xml, /<content type="html"[^>]*>&lt;picture&gt;/);
+    assert.doesNotMatch(xml, /<content\b/);
+    assert.doesNotMatch(xml, /&lt;(?:picture|img|script|pre)\b/);
+    assert.doesNotMatch(xml, /images\/panel|flowchart|alert\(1\)/);
+  });
+
+  it("renders summaries without requiring or reading a post body", () => {
+    const post = samplePost();
+    Object.defineProperty(post, "body", {
+      get() {
+        throw new Error("Summary feeds must not read the post body");
+      },
+    });
+    const xml = renderFeed(config, [post]);
+    assert.match(xml, /<summary>Engines &lt;and&gt; poetry<\/summary>/);
+    assert.match(xml, /<media:thumbnail\b/);
+    assert.doesNotMatch(xml, /<content\b/);
+  });
+
+  it("includes the required summary even when the description is empty", () => {
+    for (const description of ["", undefined, null]) {
+      const xml = renderFeed(config, [
+        samplePost({ description, body: undefined, image: undefined }),
+      ]);
+      assert.match(xml, /<summary><\/summary>/);
+      assert.doesNotMatch(xml, /<content\b|<media:thumbnail\b/);
+      assert.match(xml, /<link rel="alternate" type="text\/html"/);
+    }
   });
 
   it("absolutizes raw HTML URLs with every attribute quoting form", () => {

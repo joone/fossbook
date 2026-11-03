@@ -28,8 +28,8 @@ _Artwork from [F/OSS Comics](https://fosscomics.com)._
   generate language-specific pages, navigation, and `hreflang` metadata
 - **Static web output** — Generate fast, portable HTML with pagination, tags,
   SEO metadata, syntax highlighting, and Mermaid diagrams
-- **Full-content feeds** — Publish an Atom feed per language, with comic
-  artwork included so readers can follow along in their feed reader
+- **Summary feeds** — Publish an Atom feed per language, with post summaries,
+  optional cover thumbnails, and links to read the comic on the website
 - **Creator-owned workflow** — Store Markdown and artwork in Git, preview
   locally, customize themes, and deploy to GitHub Pages
 
@@ -603,26 +603,26 @@ default language and `/<language>/feed.xml` for translations, such as
 `/ko/feed.xml`. Each feed lists only posts written in its language, and each
 entry links to the post's other translations.
 
-Entries contain the full post, not just a summary. Comic artwork, captions,
-and dialogue are included, and every image and link URL is made absolute, so
-an episode can be read entirely in a feed reader. Scripts are removed, and
-Mermaid diagrams, which need JavaScript to render, are replaced with a link
-to the post. The post's front-matter `image` is attached as a
-`media:thumbnail` for readers that show previews.
-Raw HTML image and link URLs support double-quoted, single-quoted, and
-unquoted attributes; responsive `srcset` URLs are made absolute as well.
+Entries include the title, publication date, tags, a plain-text summary from
+the post's front-matter `description`, and a link to read the original post.
+Full post HTML, comic panels, captions, dialogue, scripts, and Mermaid
+diagrams are not included. Every entry has a `summary` element; if
+`description` is missing or empty, that summary is empty.
+
+When the post has a front-matter `image`, its absolute URL is retained as
+`media:thumbnail` metadata for readers that show cover previews. The image
+is not embedded in the summary, and thumbnail display depends on the reader.
 
 The Archie theme adds `<link rel="alternate" type="application/atom+xml">`
 tags to every page so browsers and feed readers can discover the feeds (the
 current language's feed first), and a feed icon to the footer. Custom themes
 can call `${page.feedLinks()}` inside `<head>` to do the same.
 
-| Option             | Default                              | Description                                                     |
-| ------------------ | ------------------------------------ | --------------------------------------------------------------- |
-| `feed`             | `true`                               | Set to `false` to skip feed generation and the discovery links. |
-| `feedLimit`        | `20`                                 | Number of newest posts in each feed. `0` includes every post.   |
-| `feedLabel`        | `"Atom feed"`                        | Tooltip for the footer feed icon.                               |
-| `feedDiagramLabel` | `"View this diagram on the website"` | Link text that replaces Mermaid diagrams in feed entries.       |
+| Option      | Default       | Description                                                   |
+| ----------- | ------------- | ------------------------------------------------------------- |
+| `feed`      | `true`        | Set to `false` to skip feed generation and the discovery links. |
+| `feedLimit` | `20`          | Number of newest posts in each feed. `0` includes every post.   |
+| `feedLabel` | `"Atom feed"` | Tooltip for the footer feed icon.                              |
 
 `blogName`, `blogDescription`, `authorName`, and the labels can be set per
 language in `fossbook.config.<language>.js`, and the feed uses those values.

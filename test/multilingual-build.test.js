@@ -289,18 +289,22 @@ describe("Multilingual site build", () => {
     assert.match(englishFeed, /<title>English only<\/title>/);
     assert.doesNotMatch(englishFeed, /Draft post/);
     assert.doesNotMatch(englishFeed, /한국어 제목/);
+    assert.match(englishFeed, /<summary>English title<\/summary>/);
+    assert.doesNotMatch(englishFeed, /<content\b|&lt;img\b|Updated prose only/);
     assert.match(
       englishFeed,
-      /&lt;img src=&quot;https:\/\/example\.com\/posts\/translated\/images\/panel\.png&quot;/,
+      /<media:thumbnail url="https:\/\/example\.com\/posts\/translated\/images\/panel\.png"\/>/,
     );
     assert.match(koreanFeed, /xml:lang="ko"/);
     assert.match(koreanFeed, /<title>나의 블로그<\/title>/);
     assert.match(koreanFeed, /<title>한국어 제목<\/title>/);
     assert.doesNotMatch(koreanFeed, /English only/);
     assert.doesNotMatch(koreanFeed, /초안/);
+    assert.match(koreanFeed, /<summary>한국어 제목<\/summary>/);
+    assert.doesNotMatch(koreanFeed, /<content\b|&lt;img\b/);
     assert.match(
       koreanFeed,
-      /&lt;img src=&quot;https:\/\/example\.com\/ko\/posts\/translated\/images\/panel\.png&quot;/,
+      /<media:thumbnail url="https:\/\/example\.com\/ko\/posts\/translated\/images\/panel\.png"\/>/,
     );
     assert.match(
       koreanPost,
