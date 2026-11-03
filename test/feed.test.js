@@ -123,6 +123,62 @@ describe("Atom feed", () => {
     assert.match(xml, /<content type="html"[^>]*>&lt;picture&gt;/);
   });
 
+  it("absolutizes raw HTML URLs with every attribute quoting form", () => {
+    for (const quote of ['"', "'", ""]) {
+      const html = feedContent(
+        samplePost({
+          body:
+            `<img src = ${quote}images/panel.png${quote}>` +
+            `<a href = ${quote}next/${quote}>Next</a>` +
+            `<source srcset = ${quote}images/panel.webp${quote}>`,
+        }),
+      );
+      assert.ok(
+        html.includes(
+          'src = "https://example.com/posts/1.%20Babbage/images/panel.png"',
+        ),
+      );
+      assert.ok(
+        html.includes('href = "https://example.com/posts/1.%20Babbage/next/"'),
+      );
+      assert.ok(
+        html.includes(
+          'srcset = "https://example.com/posts/1.%20Babbage/images/panel.webp"',
+        ),
+      );
+    }
+  });
+
+  it("preserves srcset descriptors and unrelated quoted attribute text", () => {
+    const html = feedContent(
+      samplePost({
+        body:
+          '<IMG title="Example > src=\'not-a-url.png\'" SRC=\'images/panel.png\'>' +
+          "<source srcset='images/small.webp 600w, images/large.webp 1200w'>",
+      }),
+    );
+    assert.ok(html.includes('title="Example > src=\'not-a-url.png\'"'));
+    assert.ok(
+      html.includes(
+        'SRC="https://example.com/posts/1.%20Babbage/images/panel.png"',
+      ),
+    );
+    assert.ok(
+      html.includes(
+        'srcset="https://example.com/posts/1.%20Babbage/images/small.webp 600w, https://example.com/posts/1.%20Babbage/images/large.webp 1200w"',
+      ),
+    );
+  });
+
+  it("escapes double quotes when normalizing single-quoted URL attributes", () => {
+    const html = feedContent(
+      samplePost({
+        body: "<a href='https://example.com/?q=\"Ada\"'>Ada</a>",
+      }),
+    );
+    assert.ok(html.includes('href="https://example.com/?q=&quot;Ada&quot;"'));
+  });
+
   it("limits entries to the newest posts", () => {
     const posts = [3, 2, 1].map((n) =>
       samplePost({

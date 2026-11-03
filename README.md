@@ -609,6 +609,8 @@ an episode can be read entirely in a feed reader. Scripts are removed, and
 Mermaid diagrams, which need JavaScript to render, are replaced with a link
 to the post. The post's front-matter `image` is attached as a
 `media:thumbnail` for readers that show previews.
+Raw HTML image and link URLs support double-quoted, single-quoted, and
+unquoted attributes; responsive `srcset` URLs are made absolute as well.
 
 The Archie theme adds `<link rel="alternate" type="application/atom+xml">`
 tags to every page so browsers and feed readers can discover the feeds (the
