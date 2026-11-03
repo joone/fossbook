@@ -10,6 +10,7 @@
         <!-- Google tag (gtag.js) -->
         ${page.config.googleAnalyticsID ? page.googleAnalytics(page.config.googleAnalyticsID) : ""}
         <title>${page.config.blogName}: ${data.pageTitle}</title>
+        ${page.feedLinks()}
         <link rel="canonical" href="${page.url}" />
         ${page.alternateLanguageLinks()}
         ${page.languagePreference()}

@@ -28,6 +28,8 @@ _Artwork from [F/OSS Comics](https://fosscomics.com)._
   generate language-specific pages, navigation, and `hreflang` metadata
 - **Static web output** — Generate fast, portable HTML with pagination, tags,
   SEO metadata, syntax highlighting, and Mermaid diagrams
+- **Full-content feeds** — Publish an Atom feed per language, with comic
+  artwork included so readers can follow along in their feed reader
 - **Creator-owned workflow** — Store Markdown and artwork in Git, preview
   locally, customize themes, and deploy to GitHub Pages
 
@@ -141,6 +143,10 @@ module.exports = {
     en: { languageName: "English", locale: "en-US" },
     ko: { languageName: "한국어", locale: "ko-KR" },
   },
+
+  // Optional Atom feed at <language root>/feed.xml (see "Feeds" below)
+  feed: true,
+  feedLimit: 20,
 
   // Optional comments (see "Comments" below)
   comments: {
@@ -557,14 +563,17 @@ above generates:
 ```text
 public/
 ├── index.html
+├── feed.xml
 ├── about/index.html
 ├── posts/Charles Babbage and Ada Lovelace/index.html
 ├── ko/
 │   ├── index.html
+│   ├── feed.xml
 │   ├── about/index.html
 │   └── posts/Charles Babbage and Ada Lovelace/index.html
 └── ja/
     ├── index.html
+    ├── feed.xml
     └── posts/Charles Babbage and Ada Lovelace/index.html
 ```
 
@@ -585,6 +594,36 @@ sequenceDiagram
     Bob-->>Alice: Hi Alice
 ```
 ````
+
+## Feeds
+
+Every build writes an [Atom](https://www.rfc-editor.org/rfc/rfc4287) feed for
+each language at the root of that language's output: `/feed.xml` for the
+default language and `/<language>/feed.xml` for translations, such as
+`/ko/feed.xml`. Each feed lists only posts written in its language, and each
+entry links to the post's other translations.
+
+Entries contain the full post, not just a summary. Comic artwork, captions,
+and dialogue are included, and every image and link URL is made absolute, so
+an episode can be read entirely in a feed reader. Scripts are removed, and
+Mermaid diagrams, which need JavaScript to render, are replaced with a link
+to the post. The post's front-matter `image` is attached as a
+`media:thumbnail` for readers that show previews.
+
+The Archie theme adds `<link rel="alternate" type="application/atom+xml">`
+tags to every page so browsers and feed readers can discover the feeds (the
+current language's feed first), and a feed icon to the footer. Custom themes
+can call `${page.feedLinks()}` inside `<head>` to do the same.
+
+| Option             | Default                              | Description                                                     |
+| ------------------ | ------------------------------------ | --------------------------------------------------------------- |
+| `feed`             | `true`                               | Set to `false` to skip feed generation and the discovery links. |
+| `feedLimit`        | `20`                                 | Number of newest posts in each feed. `0` includes every post.   |
+| `feedLabel`        | `"Atom feed"`                        | Tooltip for the footer feed icon.                               |
+| `feedDiagramLabel` | `"View this diagram on the website"` | Link text that replaces Mermaid diagrams in feed entries.       |
+
+`blogName`, `blogDescription`, `authorName`, and the labels can be set per
+language in `fossbook.config.<language>.js`, and the feed uses those values.
 
 ## CLI Reference
 
